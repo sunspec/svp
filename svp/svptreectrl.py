@@ -1,3 +1,6 @@
+from __future__ import print_function
+
+
 # --------------------------------------------------------------------------------- #
 # CUSTOMTREECTRL wxPython IMPLEMENTATION
 # Inspired By And Heavily Based On wxGenericTreeCtrl.
@@ -307,6 +310,9 @@ Version 2.6
 
 # Version Info
 __version__ = "2.6"
+
+from builtins import input
+from builtins import range
 
 import wx
 from wx.lib.expando import ExpandoTextCtrl
@@ -6230,7 +6236,7 @@ class CustomTreeCtrl(wx.ScrolledWindow):
             sz = imageList.GetSize(0)
             self._grayedImageListStatus = wx.ImageList(sz[0], sz[1], True, 0)
 
-            for ii in xrange(imageList.GetImageCount()):
+            for ii in range(imageList.GetImageCount()):
                 bmp = imageList.GetBitmap(ii)
                 newbmp = MakeDisabledBitmap(bmp)
                 self._grayedImageListStatus.Add(newbmp)

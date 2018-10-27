@@ -17,6 +17,9 @@ limitations under the License.
 
 """
 
+from __future__ import print_function
+
+
 import os
 import sys
 
@@ -61,9 +64,9 @@ def script_update(path, old_name, new_name):
                 else:
                     if os.path.isdir(file_path):
                         script_update(file_path, old_name, new_name)
-            except Exception, e:
+            except Exception as e:
                 pass
-    except Exception, e:
+    except Exception as e:
         raise SVPError('Error on script update - directory %s: %s' % (path, str(e)))
 
 SUITE_EXT = '.ste'
@@ -168,8 +171,8 @@ def process_run(filename, env, config, params, lib_path, conn):
             info = m.script_info()
             test_script = RunScript(env=env, info=info, config=config, config_file=None, params=params, conn=conn)
             m.run(test_script)
-        except Exception, e:
-            raise
+        except Exception as e:
+            raise e
     finally:
         if name in sys.modules:
             del sys.modules[name]
@@ -229,9 +232,9 @@ def member_update(path, old_name, new_name):
                 else:
                     if os.path.isdir(file_path):
                         member_update(file_path, old_name, new_name)
-            except Exception, e:
+            except Exception as e:
                 pass
-    except Exception, e:
+    except Exception as e:
         raise SVPError('Error on member update - directory %s: %s' % (path, str(e)))
 
 class Suite(object):
@@ -311,8 +314,8 @@ class Suite(object):
             else:
                 ### log
                 pass
-          except Exception, e:
-              print str(e)
+          except Exception as e:
+              print ("{}".format(e))
 
     def merge_param_defs(self, working_dir):
         # print 'working_dir =', working_dir
@@ -423,7 +426,7 @@ class Suite(object):
             f.write(xml)
             f.close()
         else:
-            print xml
+            print (xml)
 
 RUN_MSG_ALERT = 'alert'
 RUN_MSG_CONFIRM = 'confirm'
@@ -453,8 +456,8 @@ class RunScript(script.Script):
             if self._conn:
                 if self._conn.poll() is True:
                     msg = self._conn.recv()
-        except Exception, e:
-            raise SVPError('Conn msg error: %s' % (e))
+        except Exception as e:
+            raise SVPError('Conn msg error: {}'.format (e))
 
         return msg
 
@@ -610,7 +613,7 @@ class RunContext(object):
         self.active = False
         self.results_tree = results
         if svp_dir is None or not os.path.isdir(svp_dir):
-            raise SVPError('Unknown run context directory: %s' % (svp_dir))
+            raise SVPError('Unknown run context directory: {}'.format(svp_dir))
         self.svp_dir = svp_dir
         self.files_dir = None
         self.results_dir = None
@@ -805,13 +808,13 @@ class RunContext(object):
             if self.app_conn is not None:
                 self.app_conn.close()
                 self.app_conn = None
-        except Exception, e:
+        except Exception as e:
             pass
 
         try:
             self.test_conn, self.app_conn = multiprocessing.Pipe()
-        except Exception, e:
-            print 'Error creating execution context pipe: %s' % (e)
+        except Exception as e:
+            print ('Error creating execution context pipe: {}'.format(e))
 
         try:
             if config is not None:
@@ -825,14 +828,14 @@ class RunContext(object):
             '''
             self.process = MultiProcess(name='svp_process', target=process_run, args=(filename, env, script_config, params, self.lib_path, self.test_conn))
             self.process.start()
-        except Exception, e:
+        except Exception as e:
             # raise
-            print 'Error creating execution context process: %s' % (e)
+            print ('Error creating execution context process: {}'.format(e))
             try:
                 if self.process:
                     self.process.terminate()
                     # self.process.join(timeout=0)
-            except Exception, e:
+            except Exception as e:
                 pass
 
             self.process = None
@@ -842,8 +845,8 @@ class RunContext(object):
             # ### send stop signal to process, stop forcefully for now
             try:
                 self.process.terminate()
-            except Exception, e:
-                print 'Process termination error: %s' % (e)
+            except Exception as e:
+                print ('Process termination error: {}'.format(e))
         self.status = script.RESULT_FAIL
         self.clean_up()
 
@@ -853,8 +856,8 @@ class RunContext(object):
                 self.update_result(status=rslt.RESULT_STOPPED)
                 self.app_conn.send({'op': RUN_MSG_CMD,
                                     'cmd': RUN_MSG_CMD_STOP})
-        except Exception, e:
-            raise
+        except Exception as e:
+            raise e
 
     def clean_up(self):
         try:
@@ -864,13 +867,13 @@ class RunContext(object):
             if self.app_conn is not None:
                 self.app_conn.close()
                 self.app_conn = None
-        except Exception, e:
+        except Exception as e:
             pass
 
         try:
             if self.process:
                 self.process.join(timeout=0)
-        except Exception, e:
+        except Exception as e:
             pass
 
         if self.process and self.process.exitcode != 0:
@@ -932,8 +935,8 @@ class RunContext(object):
                                 '''
                         else:
                             raise SVPError('Unknown run message type: %s' % (type(msg)))
-                    except Exception, e:
-                        entry = LogEntry('Error processing app connection for type %s: %s' % (type(msg), str(e)),
+                    except Exception as e:
+                        entry = LogEntry('Error processing app connection for type {}: {}'.format(type(msg), str(e)),
                                          level=script.ERROR)
                         self.log(entry.timestamp_str(), entry.level, entry.message)
 
@@ -951,8 +954,8 @@ class RunContext(object):
         self.results.to_xml_file(self.results_file)
 
     def update_result(self, name=None, status=None, filename=None, params=None):
-        print 'update_result: name=%s  status=%s  filename=%s  params=%s' % (str(name), str(status), str(filename),
-                                                                             str(params))
+        print ('update_result: name={}  status={}  filename={}  params={}'.format((name), (status), (filename),
+                                                                             (params)))
         self.status = status
         if self.active_result is not None:
             if name is not None:
@@ -963,7 +966,7 @@ class RunContext(object):
                 self.active_result.filename = filename
             if params is not None:
                 self.active_result.params = params
-        print 'writing results: %s' % (self.results_file)
+        print ('writing results: {}'.format(self.results_file))
         self.results.to_xml_file(self.results_file)
 
     # modification for UML purposes
@@ -995,13 +998,13 @@ class RunContext(object):
                 del sys.path[0]
     '''
     def alert(self, message):
-        print message
+        print ("{}".format(message))
 
     def confirm(self, message):
         pass
 
     def log(self, timestamp, level, message):
-        print '%s %s %s' % (timestamp, level, message)
+        print ('%s %s %s'.format(timestamp, level, message))
 
 
 #########################################################################################################
@@ -1027,8 +1030,8 @@ app_cfg_type = {'str': str, 'int': int, 'float': float, str: 'str', int: 'int', 
 """
     <appConfig name="TestTool">
       <dirs>
-        <dir working="true">C:\Users\Fred\SunSpecTestTool</dir>
-        <dir>C:\Users\Fred\SomeOtherDir</dir>
+        <dir working="true">C:\\Users\\Fred\\SunSpecTestTool</dir>
+        <dir>C:\\Users\Fred\\SomeOtherDir</dir>
       </dirs>
     </appConfig>
 
@@ -1096,7 +1099,7 @@ class SVP(object):
 
         try:
             self.from_xml(filename=self.config_file)
-        except Exception, e:
+        except Exception as e:
             pass
 
     def run(self, args=None):
@@ -1197,7 +1200,7 @@ class SVP(object):
             f.write(xml)
             f.close()
         else:
-            print xml
+            print (xml)
 
     def config_file_update(self):
         if self.config_file:
@@ -1220,7 +1223,7 @@ class SVP(object):
             if dir is not None:
                 self.dirs.remove(dir)
                 self.config_file_update()
-        except Exception, e:
+        except Exception as e:
             pass
 
     def get_directory_paths(self):

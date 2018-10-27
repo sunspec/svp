@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 """
 
 Copyright 2018, SunSpec Alliance
@@ -38,6 +40,13 @@ parameter values, respectively.
 
 '''
 
+
+from builtins import input
+from builtins import range
+
+
+
+
 import sys
 import os
 import time
@@ -45,7 +54,18 @@ import datetime
 import importlib
 import xml.etree.ElementTree as ET
 import shlex
-import multiprocessing.forking
+
+import multiprocessing
+
+try:
+    # Python 3.4+
+    if sys.platform.startswith('win'):
+        import multiprocessing.popen_spawn_win32 as forking
+    else:
+        import multiprocessing.popen_fork as forking
+except ImportError:
+    import multiprocessing.forking as forking
+
 
 version = '1.5.9'
 
@@ -77,7 +97,7 @@ PATH_SEP = '/'
 
 SCRIPT_PARAM_ROOT = '_root_'
 
-class _Popen(multiprocessing.forking.Popen):
+class _Popen(forking.Popen):
     def __init__(self, *args, **kw):
         if hasattr(sys, 'frozen'):
             # We have to set original _MEIPASS2 value from sys._MEIPASS
@@ -157,8 +177,8 @@ def load_script(path, lib_path, path_list = None):
             try:
                 info = m.script_info()
                 s = Script(info=info)
-            except Exception, e:
-                raise
+            except Exception as e:
+                raise e
                 # raise ScriptError('%s does not appear to be a script: %s' % (path, str(e)))
         finally:
             if name in sys.modules:
@@ -167,8 +187,8 @@ def load_script(path, lib_path, path_list = None):
                 del sys.path[0]
             if lib_path is not None and sys.path[0] == lib_path:
                 del sys.path[0]
-    except Exception, e:
-        raise
+    except Exception as e:
+        raise e
         # raise ScriptError('Error importing module %s: %s' % (path, str(e)))
     return s
 
@@ -311,12 +331,12 @@ class Script(object):
         try:
             if config_file is not None:
                 self.config = ScriptConfig(filename=config_file)
-        except Exception, e:
+        except Exception as e:
             self.config = config
             self.log('Error loading script config file: %s' % str(e))
 
     def alert(self, message):
-        print message
+        print (message)
 
     def config_name(self):
         name = ''
@@ -326,7 +346,7 @@ class Script(object):
 
     def confirm(self, message):
         while True:
-            c = raw_input("%s\nType 'Y' to confirm or 'N' to cancel: " % (str(message))).rstrip('\r\n').lower()
+            c = input("%s\nType 'Y' to confirm or 'N' to cancel: " % (str(message))).rstrip('\r\n').lower()
             if c == 'y':
                 return True
             elif c == 'n':
@@ -351,7 +371,7 @@ class Script(object):
         return params
 
     def log(self, message, level=INFO):
-        print '%s %s %s' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'), level, message)
+        print ('{} {} {}'.format (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'), level, message))
 
     def log_active_params(self, param_group=None, config=None, level=0):
         if param_group is None:
@@ -405,7 +425,7 @@ class Script(object):
             s += ' - Status: %s' % (status)
         if params is not None:
             s += ' - Params: %s' % params
-        print s
+        print (s)
 
     def result_dir(self):
         return self._result_dir
@@ -421,7 +441,7 @@ class Script(object):
             s += ' - Status: %s' % (status)
         if params is not None:
             s += ' - Params: %s' % (params)
-        print s
+        print (s)
 
     def result_file_path(self, name):
         return os.path.join(self.result_dir(), name)
@@ -531,7 +551,7 @@ class ScriptParamDef(object):
                 self.index_start = 0
             if type(self.index_count) != str and type(self.index_start) != str:
                 self.value = {'index_count': self.index_count, 'index_start': self.index_start}
-                for i in xrange(self.index_start, self.index_start + self.index_count):
+                for i in range(self.index_start, self.index_start + self.index_count):
                     if type(self.default) == dict:
                         value = self.default.get(i)
                         if value is not None:
@@ -566,7 +586,7 @@ class ScriptParamDef(object):
 
     def index_update(self, index_count, index_start):
         self.value = {'index_count': index_count, 'index_start': index_start}
-        for i in xrange(index_start, index_start + index_count):
+        for i in range(index_start, index_start + index_count):
             if type(self.default) == dict:
                 value = self.default.get(i)
                 if value is not None:
@@ -854,7 +874,7 @@ def params_to_xml(params, parent=None):
             if count is not None and start is not None:
                 value_str = ''
                 value_type = None
-                for i in xrange(start, start + count):
+                for i in range(start, start + count):
                     v = value.get(i)
                     if value_type is None and v is not None:
                         value_type = param_types.get(type(v), PARAM_TYPE_STR)
@@ -910,8 +930,8 @@ class ScriptConfig(object):
         if filename:
             try:
                 self.from_xml(filename=filename)
-            except Exception, e:
-                raise  ScriptConfigError('Error scanning script configuration file %s: %s' % (filename, str(e)))
+            except Exception as e:
+                raise  ScriptConfigError('Error scanning script configuration file {}: {}'.format(filename, str(e)))
 
     def param_value(self, name, param_defs=None, param_value=None):
         return self.params.get(name)
@@ -961,7 +981,7 @@ class ScriptConfig(object):
                 if count is not None and start is not None:
                     value_str = ''
                     value_type = None
-                    for i in xrange(start, start + count):
+                    for i in range(start, start + count):
                         v = value.get(i)
                         if value_type is None and v is not None:
                             value_type = param_types.get(type(v), PARAM_TYPE_STR)
@@ -1020,4 +1040,4 @@ class ScriptConfig(object):
             f.write(xml)
             f.close()
         else:
-            print xml
+            print (xml)

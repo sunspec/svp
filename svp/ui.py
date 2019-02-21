@@ -149,11 +149,13 @@ def get_wx_icon(exe, index):
     return icon
 '''
 
+
 def pil_to_image(pil, alpha=True):
     """Convert PIL Image to wx.Image."""
     if alpha:
-        image = apply( wx.EmptyImage, pil.size )
-        image.SetData( pil.convert( "RGB").tostring() )
+        #image = apply( wx.EmptyImage, pil.size )
+        image = wx.EmptyImage(pil.size, pil.size)
+        image.SetData(pil.convert("RGB").tostring())
         image.SetAlphaData(pil.convert("RGBA").tostring()[3::4])
     else:
         image = wx.EmptyImage(pil.size[0], pil.size[1])
@@ -161,6 +163,7 @@ def pil_to_image(pil, alpha=True):
         data = new_image.tostring()
         image.SetData(data)
     return image
+
 
 '''
 def get_icon_image(filename):
@@ -183,6 +186,7 @@ images = {}
 result_to_image = {}
 image_open = None
 image_closed = None
+
 
 def init_image_list():
     global image_list, images, result_to_image, image_open, image_closed
@@ -275,6 +279,7 @@ def init_image_list():
     images['xlsx'] = image_list.Add(bm)
     '''
 
+
 def result_image(result):
     image = None
     if result.type == rslt.RESULT_TYPE_FILE:
@@ -288,11 +293,14 @@ def result_image(result):
         image = result_to_image.get(result.type, -1)
     return image
 
+
 class UIError(Exception):
     pass
 
+
 def verify_delete(name):
     pass
+
 
 def makedirs(path):
     try:
@@ -304,8 +312,8 @@ def makedirs(path):
 
 class EditSuiteDialog(wx.Dialog):
     def __init__(self, parent, entity):
-        wx.Dialog.__init__(self, None, -1, 'Edit Suite - %s' % (entity.name), size=(900,500),
-                           style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, None, -1, 'Edit Suite - %s' % (entity.name), size=(900, 500),
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.entity = entity
         self.suite = None
         self.result = None
@@ -331,21 +339,21 @@ class EditSuiteDialog(wx.Dialog):
 
         self.members_label = wx.Panel(window, -1)
         open_bitmap = wx.StaticBitmap(parent=self.members_label, name=ITEM_OPEN_PREFIX + ITEM_SUITE_MEMBERS,
-                                      bitmap=wx.Bitmap(self.open_image), pos=(0,0))
+                                      bitmap=wx.Bitmap(self.open_image), pos=(0, 0))
         open_bitmap.Bind(wx.EVT_LEFT_DOWN, self.toggle_group_panel)
         closed_bitmap = wx.StaticBitmap(parent=self.members_label, name=ITEM_CLOSED_PREFIX + ITEM_SUITE_MEMBERS,
-                                        bitmap=wx.Bitmap(self.closed_image), pos=(0,2))
+                                        bitmap=wx.Bitmap(self.closed_image), pos=(0, 2))
         closed_bitmap.Bind(wx.EVT_LEFT_DOWN, self.toggle_group_panel)
         open_bitmap.group_toggle = closed_bitmap
         closed_bitmap.group_toggle = open_bitmap
-        text = wx.StaticText(self.members_label, -1, 'Suite Members', pos=(20,2))
+        text = wx.StaticText(self.members_label, -1, 'Suite Members', pos=(20, 2))
         font = text.GetFont()
         font.SetWeight(wx.FONTWEIGHT_BOLD)
         text.SetFont(font)
         text.Wrap(TEXT_WRAP)
 
         panel_name = ITEM_SUITE_MEMBERS
-        self.members_panel = wx.Panel(window, name=panel_name, size=(0,250))
+        self.members_panel = wx.Panel(window, name=panel_name, size=(0, 250))
         self.members_panel_sizer = wx.BoxSizer(wx.VERTICAL)
         self.members_panel.SetSizer(self.members_panel_sizer)
         self.members_box = wx.StaticBox(self.members_panel)
@@ -353,7 +361,7 @@ class EditSuiteDialog(wx.Dialog):
         self.members_panel_sizer.Add(members_box_sizer, 1, wx.EXPAND)
         self.members_label.suite_group_panel = self.members_panel
 
-        self.members_tree = treectrl.CustomTreeCtrl(self.members_panel, agwStyle=(wx.TR_HIDE_ROOT|wx.TR_HAS_BUTTONS|
+        self.members_tree = treectrl.CustomTreeCtrl(self.members_panel, agwStyle=(wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS|
                                                                       wx.TR_NO_LINES|wx.TR_HAS_VARIABLE_ROW_HEIGHT))
         self.members_button_up = wx.Button(self.members_panel, id=-1, label='Move Up')
         self.members_button_up.Bind(wx.EVT_BUTTON, self.OnUp)
@@ -429,7 +437,7 @@ class EditSuiteDialog(wx.Dialog):
         params_panel = wx.Panel(window)
         self.params_panel = params_panel
         params_panel.panel_sizer = wx.GridBagSizer(hgap=30, vgap=0)
-        params_panel.panel_sizer.SetEmptyCellSize((0,0))
+        params_panel.panel_sizer.SetEmptyCellSize((0, 0))
         params_panel.SetSizer(params_panel.panel_sizer)
         self.render(params_panel)
 
@@ -593,7 +601,7 @@ class EditSuiteDialog(wx.Dialog):
                                     edit_param.index_count = index_count
                                     edit_param.index_start = index_start
                                     self.edit_params[param.qname] = edit_param
-                                for i in xrange(index_start, index_start + index_count):
+                                for i in range(index_start, index_start + index_count):
                                     row = self.render_param(params_panel, param, index=i, row=row, pad=pad)
                         else:
                             row = self.render_param(params_panel, param, index=None, row=row, pad=pad)
@@ -1174,7 +1182,7 @@ class EditTestDialog(wx.Dialog):
                 if type(index_start) == str:
                     index_start = self.param_value(index_start)
                 if index_count is not None and index_start is not None:
-                    for i in xrange(index_start, index_start + index_count):
+                    for i in range(index_start, index_start + index_count):
                         for param in group.params:
                             edit_param = self.edit_params.get(param.qname)
                             if edit_param is None:
@@ -1199,7 +1207,7 @@ class EditTestDialog(wx.Dialog):
                                 edit_param.index_count = index_count
                                 edit_param.index_start = index_start
                                 self.edit_params[param.qname] = edit_param
-                            for i in xrange(index_start, index_start + index_count):
+                            for i in range(index_start, index_start + index_count):
                                 row = self.render_param(params_panel, param, index=i, row=row, pad=pad)
                     else:
                         row = self.render_param(params_panel, param, index=None, row=row, pad=pad)
@@ -2144,7 +2152,7 @@ class EntityTreeEntry(object):
                 if type(index_start) == str:
                     index_start = param_value(index_start)
                 if index_count is not None and index_start is not None:
-                    for i in xrange(index_start, index_start + index_count):
+                    for i in range(index_start, index_start + index_count):
                         for param in group.params:
                             row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row, pad=pad)
             else:
@@ -2157,7 +2165,7 @@ class EntityTreeEntry(object):
                         if type(index_start) == str:
                             index_start = param_value(index_start)
                         if index_count is not None and index_start is not None:
-                            for i in xrange(index_start, index_start + index_count):
+                            for i in range(index_start, index_start + index_count):
                                 row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row,
                                                         pad=pad)
                     else:
@@ -3301,7 +3309,7 @@ class ScriptEntry(EntityTreeEntry):
                 if type(index_start) == str:
                     index_start = param_value(index_start)
                 if index_count is not None and index_start is not None:
-                    for i in xrange(index_start, index_start + index_count):
+                    for i in range(index_start, index_start + index_count):
                         for param in group.params:
                             row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row,
                                                     pad=pad)
@@ -3315,7 +3323,7 @@ class ScriptEntry(EntityTreeEntry):
                         if type(index_start) == str:
                             index_start = param_value(index_start)
                         if index_count is not None and index_start is not None:
-                            for i in xrange(index_start, index_start + index_count):
+                            for i in range(index_start, index_start + index_count):
                                 row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row,
                                                         pad=pad)
                     else:
@@ -4969,9 +4977,9 @@ class Tool(object):
         self.xyz = None
         self.id= None
         try:
-            import win32api
+            import pypiwin32
 
-            info = win32api.GetVolumeInformation('C:\\')
+            info = pypiwin32.GetVolumeInformation('C:\\')
             self.xyz = int((info[1]) & 0xffffffff)
         except Exception:
             pass

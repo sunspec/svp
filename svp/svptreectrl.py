@@ -4744,8 +4744,8 @@ class CustomTreeCtrl(wx.ScrolledWindow):
         Returns the next expanded item after the input one.
 
         :param `item`: an instance of :class:`TreeListItem`.
-        """                
-
+        """
+        prevSibling = self.GetPrevSibling(item)
         nextSibling = self.GetNextSibling(item)
         if nextSibling:
             if nextSibling.IsExpanded():

@@ -40,12 +40,8 @@ parameter values, respectively.
 
 '''
 
-
 from builtins import input
 from builtins import range
-
-
-
 
 import sys
 import os
@@ -54,7 +50,6 @@ import datetime
 import importlib
 import xml.etree.ElementTree as ET
 import shlex
-
 import multiprocessing
 
 try:
@@ -371,7 +366,7 @@ class Script(object):
         return params
 
     def log(self, message, level=INFO):
-        print ('{} {} {}'.format (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'), level, message))
+        print ('{} {} {}'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'), level, message))
 
     def log_active_params(self, param_group=None, config=None, level=0):
         if param_group is None:

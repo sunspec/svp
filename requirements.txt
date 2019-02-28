@@ -15,7 +15,7 @@ numpy==1.15.1
 openpyxl==2.5.7
 pip==18.0
 pyparsing==2.2.1
-pysunspec==1.0.8
+git+https://github.com/sunspec/pysunspec@v.1.0.8#egg=pysunspec
 python-dateutil==2.7.3
 pytz==2018.5
 serial==0.0.69

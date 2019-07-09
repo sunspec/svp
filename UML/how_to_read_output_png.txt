@@ -1,0 +1,7 @@
+On the first line: the Python filename, the line number and the method name
+
+On the second line: the percentage of global time that this square uses
+
+On the third line: in brackets, the percentage of global time spent in the method itself
+
+On the fourth line: the number of calls made

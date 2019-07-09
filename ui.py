@@ -3775,6 +3775,7 @@ class TestEntry(EntityTreeEntry):
         title.SetBackgroundColour('white')
         logo_sizer = wx.BoxSizer(wx.VERTICAL)
         logo_h_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        print(title,wx.Bitmap(os.path.join(images_path, 'test_32.gif')))
         bitmap = wx.StaticBitmap(parent=title, bitmap=wx.Bitmap(os.path.join(images_path, 'test_32.gif')))
         text = wx.StaticText(title, -1, self.name.split('.')[0])
         text.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.NORMAL))
@@ -4963,6 +4964,7 @@ class RunDialog(wx.Dialog):
 class Tool(object):
     def __init__(self):
         self.xyz = None
+        self.id= None
         try:
             import win32api
 
@@ -4974,8 +4976,9 @@ class Tool(object):
     def run(self, args=None):
         if args is not None:
             try:
-                svp_cmd = svp.SVP(self.id)
-                svp_cmd.run({'svp_dir': args.svp_dir,
+                # modification for UML purposes
+                self.svp_cmd = svp.SVP(self.id)
+                self.svp_cmd.run({'svp_dir': args.svp_dir,
                              'svp_file': args.target})
                 '''
                 app_cmd.run(args.svp_dir, args.target, args.result)
@@ -5008,8 +5011,7 @@ def main(args=None):
 
 if __name__ == "__main__":
 
-    # sys.stdout = sys.stderr = open(os.path.join(svp.trace_dir(), 'sunssvp.log'), "w", buffering=0)
-
+    #sys.stdout = sys.stderr = open(os.path.join(svp.trace_dir(), 'sunssvp.log'), "w", buffering=0)
     # On Windows calling this function is necessary.
     multiprocessing.freeze_support()
 
@@ -5019,6 +5021,5 @@ if __name__ == "__main__":
         parser.add_argument('svp_dir', help='SVP directory')
         parser.add_argument('target', help='suite/test/script in SVP directory')
         args = parser.parse_args()
-
     err = main(args)
     sys.exit(err)

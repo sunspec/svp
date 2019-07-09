@@ -2516,7 +2516,7 @@ class GenericTreeItem(object):
         
             # evaluate the item
             h = theCtrl.GetLineHeight(self)
-            
+
             if point.y > self._y and point.y < self._y + h:
             
                 y_mid = self._y + h/2
@@ -7610,7 +7610,7 @@ class CustomTreeCtrl(wx.ScrolledWindow):
         w, h = self.GetSize()
         flags = 0
 
-        pointX, pointY = point[0], point[1]
+        pointX, pointY = point.x, point.y
         if pointX < 0:
             flags |= TREE_HITTEST_TOLEFT
         if pointX > w:
@@ -7627,7 +7627,7 @@ class CustomTreeCtrl(wx.ScrolledWindow):
             flags = TREE_HITTEST_NOWHERE
             return None, flags
 
-        point = self.CalcUnscrolledPosition(*point)
+        point = wx.Point(self.CalcUnscrolledPosition(*point))
         hit, flags = self._anchor.HitTest(point, self, flags, 0)
 
         if hit == None:

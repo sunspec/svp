@@ -32,6 +32,11 @@ import xml.etree.ElementTree as ET
 import result as rslt
 import script
 
+
+#modification for UML purposes
+#import VV
+
+
 extended_path_list = []
 
 class SVPError(Exception):
@@ -146,6 +151,8 @@ class MultiProcess(multiprocessing.Process):
     pass
 
 # cmd_line_target_dirs = [SUITES_DIR, TESTS_DIR, SCRIPTS_DIR]
+
+# modification for UML purposes
 
 def process_run(filename, env, config, params, lib_path, conn):
     name = script_path = None
@@ -627,6 +634,12 @@ class RunContext(object):
         self.active_result = None
         self.status = None
 
+        #modification for UML purposes
+        '''
+        self.m = None
+        self.info = None
+        self.test_script = None
+        '''
     def is_alive(self):
         if self.process is not None:
             return self.process.is_alive()
@@ -720,7 +733,6 @@ class RunContext(object):
                 suite.result_dir = os.path.join(self.suite_result_dir, result_file_name(name))
                 self.suite = suite
                 self.suite_result_dir = suite.result_dir
-                makedirs(self.suite_result_dir)
                 if self.results_tree:
                     suite.result = self.active_result
                 else:
@@ -806,9 +818,12 @@ class RunContext(object):
                 script_config = copy.deepcopy(config)
             else:
                 script_config = None
-            self.process = MultiProcess(name='svp_process', target=process_run, args=(filename, env, script_config,
-                                                                                      params, self.lib_path,
-                                                                                      self.test_conn))
+            # modification for UML purposes
+            '''
+            self.process = MultiProcess(name='svp_process', target=RunContext.process_run(), args=(filename, env, script_config,
+                                                                                      params, self.lib_path, self.test_conn))
+            '''
+            self.process = MultiProcess(name='svp_process', target=process_run, args=(filename, env, script_config, params, self.lib_path, self.test_conn))
             self.process.start()
         except Exception, e:
             # raise
@@ -951,6 +966,34 @@ class RunContext(object):
         print 'writing results: %s' % (self.results_file)
         self.results.to_xml_file(self.results_file)
 
+    # modification for UML purposes
+    '''
+    def process_run(self, filename, env, config, params, lib_path, conn):
+        name = script_path = None
+        try:
+            sys.stdout = sys.stderr = open(os.path.join(trace_dir(), 'sunssvp_script.log'), "w", buffering=0)
+            script_path, name = os.path.split(filename)
+            name, ext = os.path.splitext(name)
+            if lib_path is not None:
+                sys.path.insert(0, lib_path)
+            sys.path.insert(0, script_path)
+            try:
+                # modification for UML purposes
+                self.m = importlib.import_module(name)
+                #self.m = VV
+                self.info = self.m.script_info()
+                self.test_script = RunScript(env=env, info=self.info, config=config, config_file=None, params=params, conn=conn)
+                self.m.run(self.test_script)
+            except Exception, e:
+                raise
+        finally:
+            if name in sys.modules:
+                del sys.modules[name]
+            if sys.path[0] == script_path:
+                del sys.path[0]
+            if lib_path is not None and sys.path[0] == lib_path:
+                del sys.path[0]
+    '''
     def alert(self, message):
         print message
 
@@ -1192,9 +1235,5 @@ SVP_PROG_NAME = 'SVP'
 if __name__ == "__main__":
     # On Windows calling this function is necessary.
     multiprocessing.freeze_support()
-
-    app = SVP(1)
-    app.run({'svp_dir': 'c:/users/bob/pycharmprojects/svp test/',
-             'svp_file': 'suite_a.ste'})
 
 

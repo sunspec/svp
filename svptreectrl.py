@@ -7627,7 +7627,7 @@ class CustomTreeCtrl(wx.ScrolledWindow):
             flags = TREE_HITTEST_NOWHERE
             return None, flags
 
-        point = self.CalcUnscrolledPosition(*point)
+        point = wx.Point(self.CalcUnscrolledPosition(*point))
         hit, flags = self._anchor.HitTest(point, self, flags, 0)
 
         if hit == None:

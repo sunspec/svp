@@ -4,10 +4,10 @@ System Validation Platform
 Note that you may want the following python environment for running the SVP:
 
     pyVISA 1.9.1
-    PyYAML 3.1.3
+    PyYAML 3.13
     Pypubsub 4.0.0
     XlsxWriter 1.1.0
-    packports.functools-lru-cache 1.5
+    backports.functools-lru-cache 1.5
     cycler 0.10.0
     enum34 1.1.6
     et-xmlfile 1.0.1
@@ -28,5 +28,5 @@ Note that you may want the following python environment for running the SVP:
     six 1.11.0
     typing 3.6.6
     wheel 0.31.1
-    wxPythong 4.0.3
+    wxPython 4.0.3
     wxmplot 0.9.30

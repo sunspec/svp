@@ -30,6 +30,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Questions can be directed to support@sunspec.org
 """
 import time
+import random
+import numpy as np
+import datetime
 
 query_points = {
     'AC_VRMS': 'UTRMS',
@@ -39,9 +42,22 @@ query_points = {
     'AC_Q': 'Q',
     'AC_PF': 'PF',
     'AC_FREQ': 'FCYC',
+    'AC_INC': 'INCA',
     'DC_V': 'UDC',
     'DC_I': 'IDC',
     'DC_P': 'P'
+}
+
+initiale_average_values = {
+    'U': 120.00,
+    'I': 12.00,
+    'PF': 0.12,
+    'FCYC': 67.00,
+    'P': 12345.00,
+    'Q': 11111.00,
+    'S': 16609.00,
+    'INCA': 1.00,
+    'Unset': 9991.00
 }
 
 
@@ -59,9 +75,11 @@ class Device(object):
         self.channels = params.get('channels')
         self.data_points = ['TIME']
         self.rm = None
+        self.average = initiale_average_values
         # Connection object
         self.conn = None
-
+        self.start_time = None
+        self.current_time = None
         self.query_chan_str = ""
         item = 0
 
@@ -98,28 +116,56 @@ class Device(object):
         pass
 
     def data_capture(self, enable=True):
-        pass
+        self.start_time = None
 
     def data_read(self):
 
+        if self.start_time is None:
+            self.start_time = np.datetime64(datetime.datetime.utcnow(), 'us')
+        else :
+            self.current_time = np.datetime64(datetime.datetime.utcnow(), 'us')
         data = []
         points = self.query_chan_str.split(";")[:-1]
         for point in points:
             if 'U' in point:
-                data.append(123)
-            elif 'I' in point:
-                data.append(12)
+                data.append(self._gen_data('U'))
+            elif 'I' in point and 'INCA' not in point:
+                data.append(self._gen_data('I'))
             elif 'PF' in point:
-                data.append(0.12)
+                data.append(self._gen_data('PF'))
             elif 'FCYC' in point:
-                data.append(67)
+                data.append(self._gen_data('FCYC'))
             elif 'P' in point and 'PF' not in point:
-                data.append(12345)
+                data.append(self._gen_data('P'))
             elif 'Q' in point:
-                data.append(11111)
+                data.append(self._gen_data('Q'))
             elif 'S' in point and 'RMS' not in point:
-                data.append(16609)
+                data.append(self._gen_data('S'))
+            elif 'INCA' in point:
+                data.append(self._gen_data('INCA'))
             else:
-                data.append(9991)
+                data.append(self._gen_data('Unset'))
         data.insert(0, time.clock())
         return data
+
+    def _gen_data(self, key):
+        delta = random.uniform(-0.5, 0.5)
+        r = random.random()
+
+        if key == 'INCA':
+            if r > 0.9:
+                self.average[key] = -1
+            elif r > 0.8:
+                self.average[key] = 0
+            else:
+                self.average[key] = 1
+        else:
+            if r > 0.9:
+                self.average[key] += delta * 0.33*self.average[key]
+            elif r > 0.8:
+                # attraction to the initial value
+                delta += (0.5 if initiale_average_values[key] > self.average[key] else -0.5)
+                self.average[key] += delta*0.01*self.average[key]
+            else:
+                self.average[key] += delta*0.01*self.average[key]
+        return self.average[key]

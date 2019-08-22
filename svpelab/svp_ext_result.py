@@ -483,7 +483,7 @@ class ResultMenu(object):
                     v = float(values[i])
                     value_arrays[i].append(v)
                 except Exception, e:
-                    value_arrays[i].append('nan')
+                    value_arrays[i].append(0)
                     pass
 
         time_array = numpy.array(value_arrays[0])

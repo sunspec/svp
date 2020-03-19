@@ -32,8 +32,8 @@ Questions can be directed to support@sunspec.org
 
 import os
 
-import wavegen
-import gridsim
+from . import wavegen
+from . import gridsim
 
 manual_info = {
     'name': os.path.splitext(os.path.basename(__file__))[0],

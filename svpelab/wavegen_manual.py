@@ -32,8 +32,8 @@ Questions can be directed to support@sunspec.org
 
 import os
 
-import device_wavegen_manual
-import wavegen
+from . import device_wavegen_manual
+from . import wavegen
 
 manual_info = {
     'name': os.path.splitext(os.path.basename(__file__))[0],

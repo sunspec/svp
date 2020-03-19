@@ -35,7 +35,7 @@ import os
 import glob
 import importlib
 
-import dataset
+from . import dataset
 
 '''
 The DAS module supports collecting time series data records in a dataset. Each time series data record is comprised
@@ -103,7 +103,7 @@ def params(info, id=None, label='Data Acquisition System', group_name=None, acti
     name = lambda name: group_name + '.' + name
     info.param_group(group_name, label='%s Parameters' % label, active=active, active_value=active_value, glob=True)
     info.param(name('mode'), label='Mode', default='Disabled', values=['Disabled'])
-    for mode, m in das_modules.iteritems():
+    for mode, m in das_modules.items():
         m.params(info, group_name=group_name)
 
 DAS_DEFAULT_ID = 'das'
@@ -183,7 +183,7 @@ class DAS(object):
     def _data_expand(self, data):
         if len(self.data_points) != len(data):
             raise DASError('Data/data point mismatch: %s %s' % (self.data_points, data))
-        return dict(zip(self.data_points, data))
+        return dict(list(zip(self.data_points, data)))
 
     def _timer_timeout(self, arg=None):
         self.data_sample()
@@ -347,7 +347,7 @@ def das_scan():
             else:
                 if module_name is not None and module_name in sys.modules:
                     del sys.modules[module_name]
-        except Exception, e:
+        except Exception as e:
             if module_name is not None and module_name in sys.modules:
                 del sys.modules[module_name]
             raise DASError('Error scanning module %s: %s' % (module_name, str(e)))

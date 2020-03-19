@@ -44,12 +44,12 @@ def params(info, id=None, label='Load Simulator', group_name=None, active=None, 
         group_name += '.' + LOADSIM_DEFAULT_ID
     if id is not None:
         group_name = group_name + '_' + str(id)
-    print 'group_name = %s' % group_name
+    print('group_name = %s' % group_name)
     name = lambda name: group_name + '.' + name
     info.param_group(group_name, label='%s Parameters' % label, active=active, active_value=active_value, glob=True)
-    print 'name = %s' % name('mode')
+    print('name = %s' % name('mode'))
     info.param(name('mode'), label='Mode', default='Disabled', values=['Disabled'])
-    for mode, m in loadsim_modules.iteritems():
+    for mode, m in loadsim_modules.items():
         m.params(info, group_name=group_name)
 
 LOADSIM_DEFAULT_ID = 'loadsim'
@@ -160,7 +160,7 @@ def loadsim_scan():
             else:
                 if module_name is not None and module_name in sys.modules:
                     del sys.modules[module_name]
-        except Exception, e:
+        except Exception as e:
             if module_name is not None and module_name in sys.modules:
                 del sys.modules[module_name]
             raise LoadSimError('Error scanning module %s: %s' % (module_name, str(e)))

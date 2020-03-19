@@ -83,7 +83,7 @@ class Waveform(object):
         f = open(filename, 'w')
         chan_count = len(self.channels)
         f.write('%s\n' % ','.join(self.channels))
-        for i in xrange(len(self.channel_data[0])):
+        for i in range(len(self.channel_data[0])):
             data = []
             for c in range(chan_count):
                 data.append(self.channel_data[c][i])
@@ -157,14 +157,14 @@ class Waveform(object):
 if __name__ == "__main__":
 
     wf = Waveform()
-    wf.from_csv('c:\users\\bob\\waveforms\\sandia\\capture_1.csv')
+    wf.from_csv('c:\\users\\bob\\waveforms\\sandia\\capture_1.csv')
     '''
     rms_time, rms_data = wf.compute_cycle_rms('AC_V_1')
     print rms_time
     print rms_data
     '''
     wf.compute_rms_data(1)
-    print wf.rms_data
+    print(wf.rms_data)
 
 
 

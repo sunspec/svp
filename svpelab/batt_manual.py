@@ -32,7 +32,7 @@ Questions can be directed to support@sunspec.org
 
 import os
 
-import batt
+from . import batt
 
 manual_info = {
     'name': os.path.splitext(os.path.basename(__file__))[0],

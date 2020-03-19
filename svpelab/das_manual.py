@@ -32,8 +32,8 @@ Questions can be directed to support@sunspec.org
 
 import os
 
-import device_das_manual
-import das
+from . import device_das_manual
+from . import das
 
 manual_info = {
     'name': os.path.splitext(os.path.basename(__file__))[0],

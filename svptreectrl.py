@@ -6230,7 +6230,7 @@ class CustomTreeCtrl(wx.ScrolledWindow):
             sz = imageList.GetSize(0)
             self._grayedImageListStatus = wx.ImageList(sz[0], sz[1], True, 0)
 
-            for ii in xrange(imageList.GetImageCount()):
+            for ii in range(imageList.GetImageCount()):
                 bmp = imageList.GetBitmap(ii)
                 newbmp = MakeDisabledBitmap(bmp)
                 self._grayedImageListStatus.Add(newbmp)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+
 
 
 """
@@ -739,11 +739,11 @@ class EditSuiteDialog(wx.Dialog):
 
     def update_params(self):
         self.params = {}
-        for name, p in self.edit_params.items():
+        for name, p in list(self.edit_params.items()):
             if script.param_is_active(self.suite.param_defs, name, self.param_value) is not None:
                 if len(p.indexed_entries) > 0:
                     value = {'index_count': p.param.index_count, 'index_start': p.param.index_start}
-                    for key, v in p.indexed_entries.iteritems():
+                    for key, v in p.indexed_entries.items():
                         value[key] = p.param_value(index=key)
                     self.params[name] = value
                 else:
@@ -1343,11 +1343,11 @@ class EditTestDialog(wx.Dialog):
 
     def update_params(self):
         #### self.params = {}
-        for name, p in self.edit_params.items():
+        for name, p in list(self.edit_params.items()):
             if script.param_is_active(self.test_script.param_defs, name, self.param_value) is not None:
                 if p.index_count is not None:
                     value = {'index_count': p.index_count, 'index_start': p.index_start}
-                    for key, v in p.indexed_entries.iteritems():
+                    for key, v in p.indexed_entries.items():
                         value[key] = p.param_value(index=key)
                     self.params[name] = value
                 else:

@@ -124,11 +124,11 @@ class Dataset(object):
             self.data.append([])
 
     def to_csv(self, filename):
-        cols = range(len(self.data))
+        cols = list(range(len(self.data)))
         if len(cols) > 0:
             f = open(filename, 'w')
             f.write('%s\n' % ', '.join(map(str, self.points)))
-            for i in xrange(len(self.data[0])):
+            for i in range(len(self.data[0])):
                 d = []
                 for j in cols:
                     # self.ts.log_debug('data = %s' % self.data)

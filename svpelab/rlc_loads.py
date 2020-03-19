@@ -41,12 +41,12 @@ def params(info, id=None, label='RLC Loads'):
     group_name = RLC_DEFAULT_ID
     if id is not None:
         group_name = group_name + '_' + str(id)
-    print 'group_name = %s' % group_name
+    print('group_name = %s' % group_name)
     name = lambda name: group_name + '.' + name
     info.param_group(group_name, label='%s Parameters' % label, glob=True)
-    print 'name = %s' % name('mode')
+    print('name = %s' % name('mode'))
     info.param(name('mode'), label='Mode', default='Manual', values=[])
-    for mode, m in rlc_loads_modules.iteritems():
+    for mode, m in rlc_loads_modules.items():
         m.params(info, group_name=group_name)
 
 RLC_DEFAULT_ID = 'rlc_loads'
@@ -60,7 +60,7 @@ def rlc_loads_init(ts, id=None):
     group_name = RLC_DEFAULT_ID
     if id is not None:
         group_name = group_name + '_' + str(id)
-    print 'run group_name = %s' % group_name
+    print('run group_name = %s' % group_name)
     mode = ts.param_value(group_name + '.' + 'mode')
     sim_module = rlc_loads_modules.get(mode)
     if sim_module is not None:
@@ -136,7 +136,7 @@ def rlc_loads_scan():
             else:
                 if module_name is not None and module_name in sys.modules:
                     del sys.modules[module_name]
-        except Exception, e:
+        except Exception as e:
             if module_name is not None and module_name in sys.modules:
                 del sys.modules[module_name]
             raise RLCError('Error scanning module %s: %s' % (module_name, str(e)))

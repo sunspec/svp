@@ -220,10 +220,10 @@ class Result(object):
             f.write(xml)
             f.close()
         else:
-            print xml
+            print(xml)
 
     def to_xlsx(self, wb=None, filename=None, results_dir=None, index=True, index_row=0):
-        print 'to_xlsx: %s %s' % (wb, filename)
+        print('to_xlsx: %s %s' % (wb, filename))
         result_wb = wb
         if result_wb is None:
             result_wb = ResultWorkbook(filename=filename)
@@ -236,11 +236,11 @@ class Result(object):
                 index_row = result_wb.add_csv_file(os.path.join(results_dir, self.filename), self.name,
                                                    relative_value_names=['TIME'], params=self.params,
                                                    index_row=index_row)
-        print 'results = %s' % self.results
+        print('results = %s' % self.results)
         for r in self.results:
-            print 'result in: %s' % (self.filename)
+            print('result in: %s' % (self.filename))
             index_row = r.to_xlsx(wb=result_wb, results_dir=results_dir, index=index, index_row=index_row)
-            print 'result out: %s' % (self.filename)
+            print('result out: %s' % (self.filename))
         if wb is None:
             result_wb.close()
 
@@ -264,7 +264,7 @@ class ResultWorkbook(object):
         self.link_format.set_align('vcenter')
 
     def add_index(self):
-        print 'add_index'
+        print('add_index')
         self.ws_index = self.wb.add_worksheet('Index')
         col = 0
         for i in range(len(index_hdr)):
@@ -275,7 +275,7 @@ class ResultWorkbook(object):
             col += 1
 
     def add_index_entry(self, title, index_row, desc=None, notes=None):
-        print 'add_index_entry: %s' % (title)
+        print('add_index_entry: %s' % (title))
         self.ws_index.write_url(index_row, INDEX_COL_FILE, 'internal:%s!A1' % (title),
                                 string=title)
         if desc is not None:
@@ -286,7 +286,7 @@ class ResultWorkbook(object):
 
 
     def add_chart(self, ws, params=None, index_row=None):
-        print 'add chart'
+        print('add chart')
         # get fieldnames in first row of worksheet
         colors = ['blue', 'green', 'purple', 'orange', 'red', 'brown', 'yellow']
         color_idx = 0
@@ -322,7 +322,7 @@ class ResultWorkbook(object):
         chart.set_y_axis({'name': params.get('plot.y.title', '')})
         chart.set_y2_axis({'name': params.get('plot.y2.title', '')})
         chart.set_style(2)
-        print 'ws name = %s' % (ws.get_name())
+        print('ws name = %s' % (ws.get_name()))
 
         # chart.x_axis.title = params.get('plot.x.title', '')
         # chart.y_axis.title = params.get('plot.y.title', '')
@@ -341,14 +341,14 @@ class ResultWorkbook(object):
                 col = xl_col(col_index)
                 categories = '=%s!$%s$%s:$%s$%s' % (ws_name, col, 2, col, count + 1)
             except ValueError:
-                print 'Value error for x point: %s' % (name)
+                print('Value error for x point: %s' % (name))
 
         if len(y_points) > 0:
             for name in y_points:
                 try:
                     min_error = params.get('plot.%s.min_error' % name)
                     max_error = params.get('plot.%s.max_error' % name)
-                    print 'min_error, max_error = %s %s' % (min_error, max_error)
+                    print('min_error, max_error = %s %s' % (min_error, max_error))
                     col = point_names.index(name)
                     line_color = params.get('plot.%s.color' % name, colors[color_idx])
                     point = params.get('plot.%s.point' % name, 'False')
@@ -381,12 +381,12 @@ class ResultWorkbook(object):
                             'categories_data': [],
                             'values_data':     []
                         }
-                    print 'series = %s' % series
+                    print('series = %s' % series)
                     chart.add_series(series)
                     color_idx += 1
 
                 except ValueError:
-                    print 'Value error for y1 point: %s' % (name)
+                    print('Value error for y1 point: %s' % (name))
 
         if len(y2_points) > 0:
             for name in y2_points:
@@ -414,12 +414,12 @@ class ResultWorkbook(object):
                     })
 
                 except ValueError:
-                    print 'Value error for y2 point: %s' % (name)
+                    print('Value error for y2 point: %s' % (name))
 
         return index_row
 
     def add_csv_file(self, filename, title, relative_value_names=None, params=None, index_row=None):
-        print 'add_csv_file: %s' % (title)
+        print('add_csv_file: %s' % (title))
         col_width = []
         line = 1
         ws = self.wb.add_worksheet(title)
@@ -439,7 +439,7 @@ class ResultWorkbook(object):
             print 'reader = %s %s' % (filename, reader)
             for row in reader:
             '''
-            print 'filename = %s %s' % (filename, f)
+            print('filename = %s %s' % (filename, f))
             for rec in f:
                 row = [x.strip() for x in rec.split(',')]
                 # print 'row = %s' % (row)
@@ -477,7 +477,7 @@ class ResultWorkbook(object):
                                 index = row.index(name)
                                 relative_value_index.append(index)
                             except ValueError:
-                                print 'Value error for relative value name: %s' % (name)
+                                print('Value error for relative value name: %s' % (name))
                 # get initial value for relative value fields
                 elif line == 2:
                     for index in relative_value_index:
@@ -495,12 +495,12 @@ class ResultWorkbook(object):
             else:
                 chart_title = title + '_chart'
 
-            print 'params - plot: %s - %s' % (params, params.get('plot.title'))
+            print('params - plot: %s - %s' % (params, params.get('plot.title')))
             if params is not None and params.get('plot.title') is not None:
                 index_row = self.add_chart(ws, params=params, index_row=index_row)
 
-        except Exception, e:
-            print 'add_csv_file error: %s' % (str(e))
+        except Exception as e:
+            print('add_csv_file error: %s' % (str(e)))
             raise
         finally:
             if f:
@@ -543,11 +543,11 @@ if __name__ == "__main__":
     result.results.append(result2)
 
     xml_str = result.to_xml_str(pretty_print=True)
-    print xml_str
-    print result
-    print '-------------------'
+    print(xml_str)
+    print(result)
+    print('-------------------')
     result_xml = Result()
     root = ET.fromstring(xml_str)
     result_xml.from_xml(root)
-    print result_xml
+    print(result_xml)
 

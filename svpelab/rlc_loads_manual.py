@@ -32,7 +32,7 @@ Questions can be directed to support@sunspec.org
 
 import os
 
-import rlc_loads
+from . import rlc_loads
 
 manual_info = {
     'name': os.path.splitext(os.path.basename(__file__))[0],

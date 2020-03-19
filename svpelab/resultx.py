@@ -94,7 +94,7 @@ class ResultWorkbook(object):
             name = x_points[0]
             try:
                 col = point_names.index(name) + 1
-                print 'x: %s %s' % (col, ws.max_row)
+                print('x: %s %s' % (col, ws.max_row))
                 x_values = openpyxl.chart.Reference(ws, min_col=col, min_row=2, max_row=ws.max_row)
             except ValueError:
                 pass
@@ -201,7 +201,7 @@ class ResultWorkbook(object):
                                        'plot.y2.points': 'AC_IRMS_1',
                                        'plot.y2.title': 'Current (A)'})
             '''
-        except Exception, e:
+        except Exception as e:
             raise
         finally:
             if f:
@@ -347,7 +347,7 @@ class Result(object):
             f.write(xml)
             f.close()
         else:
-            print xml
+            print(xml)
 
     def to_xlsx(self, wb=None, filename=None):
         '''
@@ -359,7 +359,7 @@ class Result(object):
                      'plot.y2.points': 'AC_IRMS_1',
                      'plot.y2.title': 'Current (A)'}
         '''
-        print 'creating to_xlsx for %s' % filename
+        print('creating to_xlsx for %s' % filename)
 
         result_wb = wb
         if result_wb is None:
@@ -372,7 +372,7 @@ class Result(object):
         for result in self.results:
             result.to_xlsx(wb=result_wb)
         if wb is None:
-            print 'saving'
+            print('saving')
             result_wb.save(filename=filename)
 
 """ Simple XML pretty print support function
@@ -416,5 +416,5 @@ if __name__ == "__main__":
     result_xml = Result()
     result_xml.from_xml(filename='c:\\users\\bob\\downloads\\ul1741 sa_ucsd_6\\ul1741 sa 6\\results\\2017-06-28_13-24-40-977__HLVRT__LVRT_LV2\\2017-06-28_13-24-40-977__HLVRT__LVRT_LV2.rlt')
     result_xml.to_xlsx(filename='c:\\users\\bob\\downloads\\ul1741 sa_ucsd_6\\ul1741 sa 6\\results\\2017-06-28_13-24-40-977__HLVRT__LVRT_LV2\\2017-06-28_13-24-40-977__HLVRT__LVRT_LV2.xlsx')
-    print result_xml
+    print(result_xml)
 

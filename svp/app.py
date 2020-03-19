@@ -17,7 +17,7 @@ limitations under the License.
 
 """
 
-from __future__ import print_function
+
 
 
 import os
@@ -1168,7 +1168,7 @@ class SVP(object):
 
         # registration params
         e_reg_params = ET.SubElement(e, APP_CFG_REG_PARAMS)
-        for k, v in self.reg_params.iteritems():
+        for k, v in self.reg_params.items():
             if v:
                 attr = {'name': k, 'type': app_cfg_type.get(type(v), 'str')}
                 e_param = ET.SubElement(e_reg_params, APP_CFG_PARAM, attrib=attr)

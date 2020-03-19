@@ -46,7 +46,7 @@ def params(info, id=None, label='DER', group_name=None, active=None, active_valu
     name = lambda name: group_name + '.' + name
     info.param_group(group_name, label='%s Parameters' % label,  active=active, active_value=active_value, glob=True)
     info.param(name('mode'), label='%s Mode' % label, default='Disabled', values=['Disabled'])
-    for mode, m in der_modules.iteritems():
+    for mode, m in der_modules.items():
         m.params(info, group_name=group_name)
 
 DER_DEFAULT_ID = 'der'
@@ -62,7 +62,7 @@ def der_init(ts, id=None, group_name=None):
         group_name += '.' + DER_DEFAULT_ID
     if id is not None:
         group_name = group_name + '_' + str(id)
-    print 'run group_name = %s' % group_name
+    print('run group_name = %s' % group_name)
     mode = ts.param_value(group_name + '.' + 'mode')
     sim = None
     if mode != 'Disabled':
@@ -463,7 +463,7 @@ def der_scan():
             else:
                 if module_name is not None and module_name in sys.modules:
                     del sys.modules[module_name]
-        except Exception, e:
+        except Exception as e:
             if module_name is not None and module_name in sys.modules:
                 del sys.modules[module_name]
             raise DERError('Error scanning module %s: %s' % (module_name, str(e)))

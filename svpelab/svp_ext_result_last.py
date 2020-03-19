@@ -3,7 +3,7 @@ import os
 import wxmplot
 import numpy
 import openpyxl
-import result as rslt
+from . import result as rslt
 import csv
 import xlsxwriter
 
@@ -61,7 +61,7 @@ class ResultWorkbook(object):
         chart.set_y_axis({'name': params.get('plot.y.title', '')})
         chart.set_y2_axis({'name': params.get('plot.y2.title', '')})
         chart.set_style(1)
-        print 'ws name = %s' % (ws.get_name())
+        print('ws name = %s' % (ws.get_name()))
 
         # chart.x_axis.title = params.get('plot.x.title', '')
         # chart.y_axis.title = params.get('plot.y.title', '')
@@ -83,7 +83,7 @@ class ResultWorkbook(object):
             for name in y_points:
                 try:
                     col = point_names.index(name)
-                    print 'col = %s' % col
+                    print('col = %s' % col)
                     line_color = params.get('plot.%s.color' % name, colors[color_idx])
                     point = params.get('plot.%s.point' % name, 'False')
                     if point == 'True':
@@ -109,7 +109,7 @@ class ResultWorkbook(object):
             for name in y2_points:
                 try:
                     col = point_names.index(name)
-                    print 'col = %s' % col
+                    print('col = %s' % col)
                     line_color = params.get('plot.%s.color' % name, colors[color_idx])
                     point = params.get('plot.%s.point' % name, 'False')
                     if point == 'True':
@@ -185,7 +185,7 @@ class ResultWorkbook(object):
             else:
                 chart_title = title + '_chart'
 
-            print 'params - plot: %s - %s' % (params, params.get('plot.title'))
+            print('params - plot: %s - %s' % (params, params.get('plot.title')))
             if params is not None and params.get('plot.title') is not None:
                 self.add_chart(ws, params=params)
 
@@ -199,7 +199,7 @@ class ResultWorkbook(object):
                                        'plot.y2.title': 'Current (A)'})
             '''
 
-        except Exception, e:
+        except Exception as e:
             raise
         finally:
             if f:
@@ -258,7 +258,7 @@ class ResultWorkbookOPX(object):
             name = x_points[0]
             try:
                 col = point_names.index(name) + 1
-                print 'x: %s %s' % (col, ws.max_row)
+                print('x: %s %s' % (col, ws.max_row))
                 x_values = openpyxl.chart.Reference(ws, min_col=col, min_row=2, max_row=ws.max_row)
             except ValueError:
                 pass
@@ -355,7 +355,7 @@ class ResultWorkbookOPX(object):
             else:
                 chart_title = title + '_chart'
 
-            print 'params - plot: %s - %s' % (params, params.get('plot.title'))
+            print('params - plot: %s - %s' % (params, params.get('plot.title')))
             if params is not None and params.get('plot.title') is not None:
                 self.add_chart(ws, params=params)
 
@@ -368,7 +368,7 @@ class ResultWorkbookOPX(object):
                                        'plot.y2.points': 'AC_IRMS_1',
                                        'plot.y2.title': 'Current (A)'})
             """
-        except Exception, e:
+        except Exception as e:
             raise
         finally:
             if f:
@@ -403,7 +403,7 @@ class ResultMenu(object):
 
     def create_xlsx(self, arg=None):
         filename = os.path.join(self.result_dir, self.result_name, self.result_name + '.xlsx')
-        print 'creating result: %s %s %s' % (self.result_dir, self.result_name, self.result_name)
+        print('creating result: %s %s %s' % (self.result_dir, self.result_name, self.result_name))
         self.to_xlsx(self.result, filename=filename)
 
     def to_xlsx(self, r, wb=None, filename=None):
@@ -432,7 +432,7 @@ class ResultMenu(object):
 
     def create_xlsx_alt(self, arg=None):
         filename = os.path.join(self.result_dir, self.result_name, self.result_name + '.xlsx')
-        print 'creating result: %s %s %s' % (self.result_dir, self.result_name, self.result_name)
+        print('creating result: %s %s %s' % (self.result_dir, self.result_name, self.result_name))
         self.to_xlsx_alt(self.result, filename=filename)
 
     def to_xlsx_alt(self, r, wb=None, filename=None):
@@ -457,7 +457,7 @@ class ResultMenu(object):
         for result in r.results:
             self.to_xlsx(result, wb=result_wb)
         if wb is None:
-            print 'saving'
+            print('saving')
             result_wb.save(filename=filename)
 
     def plot_wxmplot(self, arg=None):
@@ -481,7 +481,7 @@ class ResultMenu(object):
                 try:
                     v = float(values[i])
                     value_arrays[i].append(v)
-                except Exception, e:
+                except Exception as e:
                     value_arrays[i].append('nan')
                     pass
 
@@ -509,7 +509,7 @@ class ResultMenu(object):
         frame.Show()
 
     def plot_pyplot(self, arg=None):
-        print 'plot_pyplot'
+        print('plot_pyplot')
 
 
 if __name__ == "__main__":

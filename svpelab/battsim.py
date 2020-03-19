@@ -57,7 +57,7 @@ def params(info, id=None, label='Battery Simulator', group_name=None, active=Non
     info.param(name('mode'), label='Mode', default='Disabled', values=['Disabled'])
     info.param(name('auto_config'), label='Configure battery simulator at beginning of test', default='Disabled',
                values=['Enabled', 'Disabled'])
-    for mode, m in battsim_modules.iteritems():
+    for mode, m in battsim_modules.items():
         m.params(info, group_name=group_name)
 
 BATTSIM_DEFAULT_ID = 'battsim'
@@ -164,7 +164,7 @@ def battsim_scan():
             else:
                 if module_name is not None and module_name in sys.modules:
                     del sys.modules[module_name]
-        except Exception, e:
+        except Exception as e:
             if module_name is not None and module_name in sys.modules:
                 del sys.modules[module_name]
             raise BattSimError('Error scanning module %s: %s' % (module_name, str(e)))

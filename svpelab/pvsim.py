@@ -47,7 +47,7 @@ def params(info, id=None, label='PV Simulator', group_name=None, active=None, ac
     name = lambda name: group_name + '.' + name
     info.param_group(group_name, label='%s Parameters' % label, active=active, active_value=active_value, glob=True)
     info.param(name('mode'), label='Mode', default='Disabled', values=['Disabled'])
-    for mode, m in pvsim_modules.iteritems():
+    for mode, m in pvsim_modules.items():
         m.params(info, group_name=group_name)
 
 PVSIM_DEFAULT_ID = 'pvsim'
@@ -134,7 +134,7 @@ def pvsim_scan():
             else:
                 if module_name is not None and module_name in sys.modules:
                     del sys.modules[module_name]
-        except Exception, e:
+        except Exception as e:
             if module_name is not None and module_name in sys.modules:
                 del sys.modules[module_name]
             raise PVSimError('Error scanning module %s: %s' % (module_name, str(e)))

@@ -41,8 +41,8 @@ import shutil
 from wx.lib.embeddedimage import PyEmbeddedImage
 from wx.lib.wordwrap import wordwrap
 import json
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 import app as svp
 import result as rslt
@@ -118,7 +118,7 @@ images_path = resource_path("images")
 def pil_to_image(pil, alpha=True):
     """Convert PIL Image to wx.Image."""
     if alpha:
-        image = apply( wx.EmptyImage, pil.size )
+        image = wx.EmptyImage(*pil.size)
         image.SetData( pil.convert( "RGB").tostring() )
         image.SetAlphaData(pil.convert("RGBA").tostring()[3::4])
     else:
@@ -519,7 +519,7 @@ class EditSuiteDialog(wx.Dialog):
                     if type(index_start) == str:
                         index_start = self.param_value(index_start)
                     if index_count is not None and index_start is not None:
-                        for i in xrange(index_start, index_start + index_count):
+                        for i in range(index_start, index_start + index_count):
                             for param in group.params:
                                 edit_param = self.edit_params.get(param.qname)
                                 if edit_param is None:
@@ -544,7 +544,7 @@ class EditSuiteDialog(wx.Dialog):
                                     edit_param.index_count = index_count
                                     edit_param.index_start = index_start
                                     self.edit_params[param.qname] = edit_param
-                                for i in xrange(index_start, index_start + index_count):
+                                for i in range(index_start, index_start + index_count):
                                     row = self.render_param(params_panel, param, index=i, row=row, pad=pad)
                         else:
                             row = self.render_param(params_panel, param, index=None, row=row, pad=pad)
@@ -682,11 +682,11 @@ class EditSuiteDialog(wx.Dialog):
 
     def update_params(self):
         self.params = {}
-        for name, p in self.edit_params.items():
+        for name, p in list(self.edit_params.items()):
             if script.param_is_active(self.suite.param_defs, name, self.param_value) is not None:
                 if len(p.indexed_entries) > 0:
                     value = {'index_count': p.param.index_count, 'index_start': p.param.index_start}
-                    for key, v in p.indexed_entries.iteritems():
+                    for key, v in p.indexed_entries.items():
                         value[key] = p.param_value(index=key)
                     self.params[name] = value
                 else:
@@ -777,7 +777,7 @@ class EditSuiteDialog(wx.Dialog):
                 self.members_tree.SetItemPyData(item, name + entity.ext)
                 self.update_suite_members()
                 self.render(self.params_panel)
-            except Exception, e:
+            except Exception as e:
                 wx.MessageBox('Error: %s' % str(e), caption='Add error',
                               style=wx.OK | wx.ICON_ERROR)
 
@@ -834,7 +834,7 @@ class EditSuiteDialog(wx.Dialog):
                     self.members_tree.SelectItem(next)
                 self.update_suite_members()
                 self.render(self.params_panel)
-            except Exception, e:
+            except Exception as e:
                 raise UIError('Error creating member path: %s' % str(e))
 
     def add_entry(self, parent, entity):
@@ -876,7 +876,7 @@ class EditSuiteDialog(wx.Dialog):
                     self.members_button_down.Enable()
                 else:
                     self.members_button_down.Disable()
-            except Exception, e:
+            except Exception as e:
                 raise UIError('Error creating member path: %s' % str(e))
 
     def OnAvailSelectionChanged(self, event):
@@ -898,7 +898,7 @@ class EditSuiteDialog(wx.Dialog):
                     entity.entity_tree.SelectItem(entity.entity_tree.GetRootItem())
                     return
                 self.members_button_add.Enable()
-            except Exception, e:
+            except Exception as e:
                 raise UIError('Error creating member path: %s' % str(e))
 
     def OnAvailTreeCtrlButtonDown(self, event):
@@ -1125,7 +1125,7 @@ class EditTestDialog(wx.Dialog):
                 if type(index_start) == str:
                     index_start = self.param_value(index_start)
                 if index_count is not None and index_start is not None:
-                    for i in xrange(index_start, index_start + index_count):
+                    for i in range(index_start, index_start + index_count):
                         for param in group.params:
                             edit_param = self.edit_params.get(param.qname)
                             if edit_param is None:
@@ -1150,7 +1150,7 @@ class EditTestDialog(wx.Dialog):
                                 edit_param.index_count = index_count
                                 edit_param.index_start = index_start
                                 self.edit_params[param.qname] = edit_param
-                            for i in xrange(index_start, index_start + index_count):
+                            for i in range(index_start, index_start + index_count):
                                 row = self.render_param(params_panel, param, index=i, row=row, pad=pad)
                     else:
                         row = self.render_param(params_panel, param, index=None, row=row, pad=pad)
@@ -1286,11 +1286,11 @@ class EditTestDialog(wx.Dialog):
 
     def update_params(self):
         #### self.params = {}
-        for name, p in self.edit_params.items():
+        for name, p in list(self.edit_params.items()):
             if script.param_is_active(self.test_script.param_defs, name, self.param_value) is not None:
                 if p.index_count is not None:
                     value = {'index_count': p.index_count, 'index_start': p.index_start}
-                    for key, v in p.indexed_entries.iteritems():
+                    for key, v in p.indexed_entries.items():
                         value[key] = p.param_value(index=key)
                     self.params[name] = value
                 else:
@@ -1373,7 +1373,7 @@ class NewTestDialog(wx.Dialog):
                 i = path.index(svp.SCRIPTS_DIR)
                 name = script.PATH_SEP.join(path[i+1:])
                 self.script_path.SetValue(name)
-            except Exception, e:
+            except Exception as e:
                 raise UIError('Error creating script path: %s' % str(e))
 
     def OnTreeCtrlLeftDown(self, event):
@@ -1605,7 +1605,7 @@ class EntityTree(treectrl.CustomTreeCtrl):
             try:
                 d.scan()
                 # self.scan_dir(d)
-            except Exception, e:
+            except Exception as e:
                 wx.MessageBox('Error: %s' % traceback.format_exc(), caption='Error', style=wx.OK | wx.ICON_ERROR)
 
     def clear_detail(self):
@@ -1632,7 +1632,7 @@ class EntityTree(treectrl.CustomTreeCtrl):
                 #entity_window.entity_detail.Layout()
                 # entity_window.entity_detail.Scroll(0, 0)
                 entity_window.entity_detail.FitInside()
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error: %s' % traceback.format_exc(), caption='Error', style=wx.OK | wx.ICON_ERROR)
 
     def OnShowPopup(self, event):
@@ -1764,7 +1764,7 @@ class EntityTreeEntry(object):
                 self.entity_tree.Delete(self.item)
                 self.parent.delete(self)
                 self.entity_tree.clear_detail()
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error deleting %s' % (str(e)), 'Delete Error', wx.OK | wx.ICON_ERROR)
 
     def op_run(self, event):
@@ -2095,7 +2095,7 @@ class EntityTreeEntry(object):
                 if type(index_start) == str:
                     index_start = param_value(index_start)
                 if index_count is not None and index_start is not None:
-                    for i in xrange(index_start, index_start + index_count):
+                    for i in range(index_start, index_start + index_count):
                         for param in group.params:
                             row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row, pad=pad)
             else:
@@ -2108,7 +2108,7 @@ class EntityTreeEntry(object):
                         if type(index_start) == str:
                             index_start = param_value(index_start)
                         if index_count is not None and index_start is not None:
-                            for i in xrange(index_start, index_start + index_count):
+                            for i in range(index_start, index_start + index_count):
                                 row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row,
                                                         pad=pad)
                     else:
@@ -2234,7 +2234,7 @@ class Directory(EntityTreeEntry):
                 else:
                     wx.MessageBox('%s already exists in %s' % (name, self.name), 'New Directory Error',
                                   wx.OK | wx.ICON_ERROR)
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error adding new directory: %s' % (str(e)), 'New Directory Error', wx.OK | wx.ICON_ERROR)
 
     def op_new_suite(self, event):
@@ -2257,7 +2257,7 @@ class Directory(EntityTreeEntry):
             self.entity_tree.SelectItem(entry.item, select=True)
 
             entry.op_edit(entry)
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error creating suite: %s' % (str(e)), 'New Suite Error', wx.OK | wx.ICON_ERROR)
 
     def op_new_test(self, event):
@@ -2295,7 +2295,7 @@ class Directory(EntityTreeEntry):
                                       image=self.entity_tree.images['test'])
             self.entity_tree.SelectItem(entry.item, select=True)
             entry.op_edit(entry)
-        except Exception, e:
+        except Exception as e:
             raise
             ### wx.MessageBox('Error creating test: %s' % (str(e)), 'New Test Error', wx.OK | wx.ICON_ERROR)
 
@@ -2310,7 +2310,7 @@ class Directory(EntityTreeEntry):
                 self.entity_tree.Unselect()
                 self.entity_tree.Delete(self.item)
                 self.parent.delete(self)
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error deleting directory %s' % (str(e)), 'Delete Directory Error', wx.OK | wx.ICON_ERROR)
 
 class WorkingDirectory(Directory):
@@ -2366,7 +2366,7 @@ class WorkingDirectory(Directory):
         self.clear()
         try:
             files = os.listdir(os.path.join(self.name))
-        except Exception, e:
+        except Exception as e:
             self.error = str(e)
             return
 
@@ -2411,9 +2411,9 @@ class WorkingDirectory(Directory):
                     try:
                         m = imp.load_source(i_name, f)
                         self.svp_ext[m_name] = m
-                        print 'Imported svp ext: %s %s %s\n%s' % (f, m_name, i_name, str(self.svp_ext))
-                    except Exception, e:
-                        print 'Error importing %s: %s' % (f, str(e))
+                        print('Imported svp ext: %s %s %s\n%s' % (f, m_name, i_name, str(self.svp_ext)))
+                    except Exception as e:
+                        print('Error importing %s: %s' % (f, str(e)))
         files = glob.glob(os.path.join(d, '*'))
         for f in files:
             if os.path.isdir(f):
@@ -2440,14 +2440,14 @@ class ScriptsDirectory(Directory):
                         self.add_entry(name, ScriptEntry, entity_tree=self.entity_tree,
                                        image=self.entity_tree.images['script'])
                         # script.load_script(file_path, lib_path)
-                    except Exception, e:
+                    except Exception as e:
                         raise UIError('Script directory scan error: %s' % str(e))
                 else:
                     if os.path.isdir(file_path):
                         d = self.add_entry(f, ScriptDirectory, entity_tree=self.entity_tree,
                                            image=self.entity_tree.images['script_dir'])
                         d.scan()
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
 class ResultsDirectory(Directory):
@@ -2465,7 +2465,7 @@ class ResultsDirectory(Directory):
                     shutil.rmtree(f)
                     ### os.remove(f)
                 self.get_working_dir().rescan()
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error deleting directory %s contents' % (str(e)), 'Delete Directory Contents Error', wx.OK | wx.ICON_ERROR)
 
     def scan(self):
@@ -2488,9 +2488,9 @@ class ResultsDirectory(Directory):
                             result_entry.result.from_xml(filename=result_file)
                             result_entry.add_results(name)
 
-                        except Exception, e:
+                        except Exception as e:
                             raise UIError('Result directory scan error: %s' % str(e))
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
     def insert_results(self, results):
@@ -2523,7 +2523,7 @@ class ResultDirectoryEntry(EntityTreeEntry):
                 self.entity_tree.Unselect()
                 self.entity_tree.Delete(self.item)
                 self.parent.delete(self)
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error deleting result %s' % (str(e)), 'Delete Result Error', wx.OK | wx.ICON_ERROR)
 
     def op_open(self, evt, title='Open Result'):
@@ -2624,7 +2624,7 @@ class ResultEntry(EntityTreeEntry):
                 self.entity_tree.Unselect()
                 self.entity_tree.Delete(self.item)
                 self.parent.delete(self)
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error deleting result %s' % (str(e)), 'Delete Result Error', wx.OK | wx.ICON_ERROR)
 
     def op_open(self, evt, title='Open Result'):
@@ -2649,7 +2649,7 @@ class ResultEntry(EntityTreeEntry):
                     try:
                         v = float(values[i])
                         value_arrays[i].append(v)
-                    except Exception, e:
+                    except Exception as e:
                         value_arrays[i].append('nan')
                         pass
 
@@ -2867,7 +2867,7 @@ class ResultEntry(EntityTreeEntry):
                     try:
                         v = float(values[i])
                         value_arrays[i].append(v)
-                    except Exception, e:
+                    except Exception as e:
                         value_arrays[i].append('nan')
                         pass
 
@@ -2921,14 +2921,14 @@ class ScriptDirectory(Directory):
                         self.add_entry(name, ScriptEntry, entity_tree=self.entity_tree,
                                        image=self.entity_tree.images['script'])
                         # script.load_script(file_path, lib_path)
-                    except Exception, e:
+                    except Exception as e:
                         raise UIError('Script directory scan error: %s' % str(e))
                 else:
                     if os.path.isdir(file_path):
                         d = self.add_entry(f, ScriptDirectory, entity_tree=self.entity_tree,
                                            image=self.entity_tree.images['script_dir'])
                         d.scan()
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
 class SuitesDirectory(Directory):
@@ -2961,10 +2961,10 @@ class SuitesDirectory(Directory):
                             d = self.add_entry(f, SuiteDirectory, entity_tree=self.entity_tree,
                                                image=self.entity_tree.images['suite_dir'])
                             d.scan()
-                except Exception, e:
+                except Exception as e:
                     pass
                     # raise UIError('Error scanning directory %s: %s' % (path, str(e)))
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
 class SuiteDirectory(Directory):
@@ -3002,10 +3002,10 @@ class SuiteDirectory(Directory):
                             d = self.add_entry(f, SuiteDirectory, entity_tree=self.entity_tree,
                                                image=self.entity_tree.images['suite_dir'])
                             d.scan()
-                except Exception, e:
+                except Exception as e:
                     pass
                     # raise UIError('Error scanning directory %s: %s' % (path, str(e)))
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
 class TestsDirectory(Directory):
@@ -3034,7 +3034,7 @@ class TestsDirectory(Directory):
                                            image=self.entity_tree.images['test_dir'])
                         # d = directory.add_dir(f, TestDirectory, entity_tree=self, image=images['test_dir'])
                         d.scan()
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
 def prompt_name(text, title, default):
@@ -3081,7 +3081,7 @@ class TestDirectory(Directory):
                         # d = directory.add_dir(f, TestDirectory, entity_tree=self, image=images['test_dir'])
                         # d.expanded = d.get_working_dir().is_expanded(self.working_dir_relative_name())
                         d.scan()
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
 class ScriptEntry(EntityTreeEntry):
@@ -3116,7 +3116,7 @@ class ScriptEntry(EntityTreeEntry):
                             #     working_dir.update_expanded(rel_path, False)
                             #     working_dir.update_expanded(script.PATH_SEP.join([svp.SUITES_DIR, dlg_path]), True)
 
-                        except Exception, e:
+                        except Exception as e:
                             wx.MessageBox('Error moving script %s: %s.' % (dlg_path, str(e)),
                                           caption='Move error', style=wx.OK | wx.ICON_ERROR)
                     else:
@@ -3169,7 +3169,7 @@ class ScriptEntry(EntityTreeEntry):
                                            image=self.entity_tree.images['test_dir'])
                         # d = directory.add_dir(f, TestDirectory, entity_tree=self, image=images['test_dir'])
                         d.scan()
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error scanning directory %s: %s' % (path, str(e)))
 
     def render_info(self, parent):
@@ -3252,7 +3252,7 @@ class ScriptEntry(EntityTreeEntry):
                 if type(index_start) == str:
                     index_start = param_value(index_start)
                 if index_count is not None and index_start is not None:
-                    for i in xrange(index_start, index_start + index_count):
+                    for i in range(index_start, index_start + index_count):
                         for param in group.params:
                             row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row,
                                                     pad=pad)
@@ -3266,7 +3266,7 @@ class ScriptEntry(EntityTreeEntry):
                         if type(index_start) == str:
                             index_start = param_value(index_start)
                         if index_count is not None and index_start is not None:
-                            for i in xrange(index_start, index_start + index_count):
+                            for i in range(index_start, index_start + index_count):
                                 row = self.render_param(info_panel, param_defs, param_value, param, index=i, row=row,
                                                         pad=pad)
                     else:
@@ -3337,7 +3337,7 @@ class SuiteEntry(EntityTreeEntry):
                                 suite = svp.Suite(filename=new_full_name)
                                 suite.name = new_name
                                 suite.to_xml_file()
-                        except Exception, e:
+                        except Exception as e:
                             wx.MessageBox('Error copying suite %s: %s.' % (dlg_path, str(e)),
                                           caption='Copy error', style=wx.OK | wx.ICON_ERROR)
                     else:
@@ -3379,7 +3379,7 @@ class SuiteEntry(EntityTreeEntry):
                             #     working_dir.update_expanded(rel_path, False)
                             #     working_dir.update_expanded(script.PATH_SEP.join([svp.SUITES_DIR, dlg_path]), True)
 
-                        except Exception, e:
+                        except Exception as e:
                             wx.MessageBox('Error moving suite %s: %s.' % (dlg_path, str(e)),
                                           caption='Move error', style=wx.OK | wx.ICON_ERROR)
                     else:
@@ -3415,7 +3415,7 @@ class SuiteEntry(EntityTreeEntry):
                 rel_path = self.relative_name() + self.ext
                 svp.member_update(suites_path, rel_path, None)
                 self.get_working_dir().rescan()
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error deleting %s' % (str(e)), 'Delete Error', wx.OK | wx.ICON_ERROR)
 
     def op_edit(self, event):
@@ -3443,7 +3443,7 @@ class SuiteEntry(EntityTreeEntry):
 
                 self.get_working_dir().rescan()
                 # self.entity_tree.render_detail(self)
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error: %s' % traceback.format_exc(), caption='Error', style=wx.OK | wx.ICON_ERROR)
             if dialog is not None:
                 dialog.Destroy()
@@ -3580,7 +3580,7 @@ class TestEntry(EntityTreeEntry):
                                 config = script.ScriptConfig(filename=new_full_name)
                                 config.name = new_name
                                 config.to_xml_file()
-                        except Exception, e:
+                        except Exception as e:
                             wx.MessageBox('Error copying test %s: %s.' % (dlg_path, str(e)),
                                           caption='Copy error', style=wx.OK | wx.ICON_ERROR)
                     else:
@@ -3623,7 +3623,7 @@ class TestEntry(EntityTreeEntry):
                             #     working_dir.update_expanded(rel_path, False)
                             #     working_dir.update_expanded(script.PATH_SEP.join([svp.SUITES_DIR, dlg_path]), True)
 
-                        except Exception, e:
+                        except Exception as e:
                             wx.MessageBox('Error moving test %s: %s.' % (dlg_path, str(e)),
                                           caption='Move error', style=wx.OK | wx.ICON_ERROR)
                     else:
@@ -3659,7 +3659,7 @@ class TestEntry(EntityTreeEntry):
                 rel_path = self.relative_name() + self.ext
                 svp.member_update(suites_path, rel_path, None)
                 self.get_working_dir().rescan()
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error deleting %s' % (str(e)), 'Delete Error', wx.OK | wx.ICON_ERROR)
 
     def op_edit(self, event):
@@ -3678,7 +3678,7 @@ class TestEntry(EntityTreeEntry):
                 script_config.to_xml_file(filename=path)
                 # re-render detail info after config update
                 self.entity_tree.render_detail(self)
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error: %s' % traceback.format_exc(), caption='Error', style=wx.OK | wx.ICON_ERROR)
             if dialog is not None:
                 dialog.Destroy()
@@ -3694,7 +3694,7 @@ class TestEntry(EntityTreeEntry):
     def load(self):
         try:
             self.test_config = script.ScriptConfig(filename=self.absolute_filename())
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error loading test configuration: %s' % str(e))
 
         working_dir = self.working_dir_path()
@@ -3729,7 +3729,7 @@ class TestEntry(EntityTreeEntry):
         title.SetBackgroundColour('white')
         logo_sizer = wx.BoxSizer(wx.VERTICAL)
         logo_h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        print(title,wx.Bitmap(os.path.join(images_path, 'test_32.gif')))
+        print((title,wx.Bitmap(os.path.join(images_path, 'test_32.gif'))))
         bitmap = wx.StaticBitmap(parent=title, bitmap=wx.Bitmap(os.path.join(images_path, 'test_32.gif')))
         text = wx.StaticText(title, -1, self.name.split('.')[0])
         text.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.NORMAL))
@@ -3916,7 +3916,7 @@ class SuiteTestEntry(EntityTreeEntry):
     def load(self):
         try:
             self.test_config = script.ScriptConfig(filename=self.absolute_filename())
-        except Exception, e:
+        except Exception as e:
             raise UIError('Error loading test configuration: %s' % str(e))
 
         working_dir = self.working_dir_path()
@@ -4386,7 +4386,7 @@ class ResultTree(treectrl.CustomTreeCtrl):
                 #entity_window.entity_detail.Layout()
                 # entity_window.entity_detail.Scroll(0, 0)
                 ## self.info_window.FitInside()
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error: %s' % traceback.format_exc(), caption='Error', style=wx.OK | wx.ICON_ERROR)
 
         # p = wx.Panel(self.info_window)
@@ -4687,7 +4687,7 @@ class RunTree(treectrl.CustomTreeCtrl):
                 #entity_window.entity_detail.Layout()
                 # entity_window.entity_detail.Scroll(0, 0)
                 ## self.info_window.FitInside()
-        except Exception, e:
+        except Exception as e:
             wx.MessageBox('Error: %s' % traceback.format_exc(), caption='Error', style=wx.OK | wx.ICON_ERROR)
 
         # p = wx.Panel(self.info_window)
@@ -4936,9 +4936,9 @@ class Tool(object):
                     app_cmd.periodic()
                     time.sleep(.2)
                 '''
-            except Exception, e:
+            except Exception as e:
                 # raise
-                print 'sunssvp: error: %s' % (str(e))
+                print('sunssvp: error: %s' % (str(e)))
                 return 1
         else:
             self.wx_app = wx.App(False)
@@ -4952,7 +4952,7 @@ class Tool(object):
                 self.wx_app.SetTopWindow(self.frm)
 
                 self.wx_app.MainLoop()
-            except Exception, e:
+            except Exception as e:
                 wx.MessageBox('Error: %s' % traceback.format_exc(), caption='Error', style=wx.OK | wx.ICON_ERROR)
 
 def main(args=None):

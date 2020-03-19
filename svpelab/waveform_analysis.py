@@ -34,27 +34,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Questions can be directed to support@sunspec.org
 """
 
-from __future__ import division
+
 
 try:
     from prettytable import PrettyTable
-except Exception, e:
+except Exception as e:
     print('Error: prettytable python package not found!')  # This will appear in the SVP log file.
 
 try:
     from matplotlib.mlab import find
     import matplotlib.pyplot as plt
-except Exception, e:
+except Exception as e:
     print('Error: matplotlib python package not found!')  # This will appear in the SVP log file.
 
 try:
     import numpy as np
-except Exception, e:
+except Exception as e:
     print('Error: numpy python package not found!')  # This will appear in the SVP log file.
 
 try:
     import math
-except Exception, e:
+except Exception as e:
     print('Error: math python package not found!')  # This will appear in the SVP log file.
 
 def calc_ride_through_duration(wfmtime, ac_current, ac_voltage=None, grid_trig=None, v_window=20., trip_thresh=3.):
@@ -153,7 +153,7 @@ def freq_from_crossings(wfmtime, sig, fs):
     """
     try:
         from scipy import signal
-    except Exception, e:
+    except Exception as e:
         print('Error: scipy python package not found!')  # This will appear in the SVP log file.
 
     # FILTER THE WAVEFORM WITH LOWPASS BUTTERWORTH FILTER
@@ -194,8 +194,8 @@ def freq_from_crossings(wfmtime, sig, fs):
 
     time_steps = np.diff(crossings)
     avg_freq = fs / np.average(time_steps)
-    freqs = [fs/time_steps[i] for i in xrange(0, len(cross_times)-1)]  #interpolate
-    freq_times = [(cross_times[i]+cross_times[i+1])/2 for i in xrange(0, len(freqs)-1)]  #interpolate
+    freqs = [fs/time_steps[i] for i in range(0, len(cross_times)-1)]  #interpolate
+    freq_times = [(cross_times[i]+cross_times[i+1])/2 for i in range(0, len(freqs)-1)]  #interpolate
 
     # plt.plot(wfmtime, sig, color='red', label='Original')
     # plt.plot(wfmtime, sig_ff, color='blue', label='Filtered data')

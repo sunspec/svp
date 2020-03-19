@@ -31,8 +31,8 @@ Questions can be directed to support@sunspec.org
 """
 
 import os
-import switch
-import device_switch_manual
+from . import switch
+from . import device_switch_manual
 
 manual_info = {
     'name': os.path.splitext(os.path.basename(__file__))[0],

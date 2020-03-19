@@ -173,7 +173,7 @@ class Result(object):
             f.write(xml)
             f.close()
         else:
-            print xml
+            print(xml)
 
 """ Simple XML pretty print support function
 
@@ -204,11 +204,11 @@ if __name__ == "__main__":
     result.results.append(result2)
 
     xml_str = result.to_xml_str(pretty_print=True)
-    print xml_str
-    print result
-    print '-------------------'
+    print(xml_str)
+    print(result)
+    print('-------------------')
     result_xml = Result()
     root = ET.fromstring(xml_str)
     result_xml.from_xml(root)
-    print result_xml
+    print(result_xml)
 

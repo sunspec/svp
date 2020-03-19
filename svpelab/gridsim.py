@@ -56,7 +56,7 @@ def params(info, id=None, label='Grid Simulator', group_name=None, active=None, 
     info.param(name('mode'), label='Mode', default='Disabled', values=['Disabled'])
     info.param(name('auto_config'), label='Configure grid simulator at beginning of test', default='Disabled',
                values=['Enabled', 'Disabled'])
-    for mode, m in gridsim_modules.iteritems():
+    for mode, m in gridsim_modules.items():
         m.params(info, group_name=group_name)
 
 GRIDSIM_DEFAULT_ID = 'gridsim'
@@ -303,7 +303,7 @@ def gridsim_scan():
             else:
                 if module_name is not None and module_name in sys.modules:
                     del sys.modules[module_name]
-        except Exception, e:
+        except Exception as e:
             if module_name is not None and module_name in sys.modules:
                 del sys.modules[module_name]
             raise GridSimError('Error scanning module %s: %s' % (module_name, str(e)))

@@ -30,7 +30,7 @@ import time
 import struct
 import hashlib
 import glob
-import multiprocessing
+#import multiprocessing
 import wx
 import wx.adv
 import xlsxwriter

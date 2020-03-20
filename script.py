@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+
+
 """
 
 Copyright 2018, SunSpec Alliance
@@ -38,6 +40,13 @@ parameter values, respectively.
 
 '''
 
+
+from builtins import input
+from builtins import range
+
+
+
+
 import sys
 import os
 import time
@@ -45,7 +54,19 @@ import datetime
 import importlib
 import xml.etree.ElementTree as ET
 import shlex
-import multiprocessing.forking
+import natsort
+
+import multiprocessing
+
+try:
+    # Python 3.4+
+    if sys.platform.startswith('win'):
+        import multiprocessing.popen_spawn_win32 as forking
+    else:
+        import multiprocessing.popen_fork as forking
+except ImportError:
+    import multiprocessing.forking as forking
+
 
 version = '1.5.9'
 
@@ -77,7 +98,7 @@ PATH_SEP = '/'
 
 SCRIPT_PARAM_ROOT = '_root_'
 
-class _Popen(multiprocessing.forking.Popen):
+class _Popen(forking.Popen):
     def __init__(self, *args, **kw):
         if hasattr(sys, 'frozen'):
             # We have to set original _MEIPASS2 value from sys._MEIPASS
@@ -122,7 +143,8 @@ def result_str(result):
 def is_sequence(arg):
     return (not hasattr(arg, 'strip') and
             hasattr(arg, '__getitem__') or
-            hasattr(arg, '__iter__'))
+            hasattr(arg, '__iter__') and
+            not isinstance(arg, str))
 
 """ Simple XML pretty print support function
 
@@ -158,7 +180,7 @@ def load_script(path, lib_path, path_list = None):
                 info = m.script_info()
                 s = Script(info=info)
             except Exception as e:
-                raise
+                raise e
                 # raise ScriptError('%s does not appear to be a script: %s' % (path, str(e)))
         finally:
             if name in sys.modules:
@@ -168,7 +190,7 @@ def load_script(path, lib_path, path_list = None):
             if lib_path is not None and sys.path[0] == lib_path:
                 del sys.path[0]
     except Exception as e:
-        raise
+        raise e
         # raise ScriptError('Error importing module %s: %s' % (path, str(e)))
     return s
 
@@ -316,7 +338,7 @@ class Script(object):
             self.log('Error loading script config file: %s' % str(e))
 
     def alert(self, message):
-        print(message)
+        print (message)
 
     def config_name(self):
         name = ''
@@ -351,7 +373,7 @@ class Script(object):
         return params
 
     def log(self, message, level=INFO):
-        print('%s %s %s' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'), level, message))
+        print ('{} {} {}'.format (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'), level, message))
 
     def log_active_params(self, param_group=None, config=None, level=0):
         if param_group is None:
@@ -405,7 +427,7 @@ class Script(object):
             s += ' - Status: %s' % (status)
         if params is not None:
             s += ' - Params: %s' % params
-        print(s)
+        print (s)
 
     def result_dir(self):
         return self._result_dir
@@ -421,7 +443,7 @@ class Script(object):
             s += ' - Status: %s' % (status)
         if params is not None:
             s += ' - Params: %s' % (params)
-        print(s)
+        print (s)
 
     def result_file_path(self, name):
         return os.path.join(self.result_dir(), name)
@@ -839,7 +861,7 @@ def params_to_xml(params, parent=None):
         e_params = ET.SubElement(parent, SCRIPT_CFG_PARAMS)
     else:
         e_params = ET.Element(SCRIPT_CFG_PARAMS)
-    sorted_params = sorted(params, key=params.get)
+    sorted_params = natsort.natsorted(params, key=params.get)
 
     for p in sorted_params:
         value_type = None
@@ -911,7 +933,7 @@ class ScriptConfig(object):
             try:
                 self.from_xml(filename=filename)
             except Exception as e:
-                raise  ScriptConfigError('Error scanning script configuration file %s: %s' % (filename, str(e)))
+                raise  ScriptConfigError('Error scanning script configuration file {}: {}'.format(filename, str(e)))
 
     def param_value(self, name, param_defs=None, param_value=None):
         return self.params.get(name)
@@ -946,7 +968,7 @@ class ScriptConfig(object):
             e_params = ET.SubElement(parent, SCRIPT_CFG_PARAMS)
         else:
             e_params = ET.Element(SCRIPT_CFG_PARAMS)
-        params = sorted(self.params, key=self.params.get)
+        params = natsort.natsorted(self.params, key= self.params.get)
 
         for p in params:
             value_type = None
@@ -1006,7 +1028,7 @@ class ScriptConfig(object):
         if pretty_print:
             xml_indent(e)
 
-        return ET.tostring(e)
+        return ET.tostring(e, encoding='unicode')
 
     def to_xml_file(self, filename=None, pretty_print=True, replace_existing=True):
         xml = self.to_xml_str(pretty_print)

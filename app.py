@@ -17,6 +17,9 @@ limitations under the License.
 
 """
 
+
+
+
 import os
 import sys
 
@@ -31,10 +34,6 @@ import xml.etree.ElementTree as ET
 
 import result as rslt
 import script
-
-#modification for UML purposes
-#import VV
-
 
 extended_path_list = []
 
@@ -151,12 +150,10 @@ class MultiProcess(multiprocessing.Process):
 
 # cmd_line_target_dirs = [SUITES_DIR, TESTS_DIR, SCRIPTS_DIR]
 
-# modification for UML purposes
-
 def process_run(filename, env, config, params, lib_path, conn):
     name = script_path = None
     try:
-        sys.stdout = sys.stderr = open(os.path.join(trace_dir(), 'sunssvp_script.log'), "w", buffering=0)
+        sys.stdout = sys.stderr = open(os.path.join(trace_dir(), 'sunssvp_script.log'), "w")
         script_path, name = os.path.split(filename)
         name, ext = os.path.splitext(name)
         if lib_path is not None:
@@ -168,7 +165,7 @@ def process_run(filename, env, config, params, lib_path, conn):
             test_script = RunScript(env=env, info=info, config=config, config_file=None, params=params, conn=conn)
             m.run(test_script)
         except Exception as e:
-            raise
+            raise e
     finally:
         if name in sys.modules:
             del sys.modules[name]
@@ -197,9 +194,6 @@ class Directory(object):
     def __init__(self, path=None, working=False):
         self.path = path
         self.working = working
-class Library(object):
-    def __init__(self, path=None):
-        self.path = path
 
 '''
     Suite
@@ -314,7 +308,7 @@ class Suite(object):
                 ### log
                 pass
           except Exception as e:
-              print(str(e))
+              print ("{}".format(e))
 
     def merge_param_defs(self, working_dir):
         # print 'working_dir =', working_dir
@@ -411,7 +405,7 @@ class Suite(object):
         if pretty_print:
             script.xml_indent(e)
 
-        return ET.tostring(e)
+        return ET.tostring(e, encoding='unicode')
 
     def to_xml_file(self, filename=None, pretty_print=True, replace_existing=True):
         xml = self.to_xml_str(pretty_print)
@@ -425,7 +419,7 @@ class Suite(object):
             f.write(xml)
             f.close()
         else:
-            print(xml)
+            print (xml)
 
 RUN_MSG_ALERT = 'alert'
 RUN_MSG_CONFIRM = 'confirm'
@@ -456,7 +450,7 @@ class RunScript(script.Script):
                 if self._conn.poll() is True:
                     msg = self._conn.recv()
         except Exception as e:
-            raise SVPError('Conn msg error: %s' % (e))
+            raise SVPError('Conn msg error: {}'.format (e))
 
         return msg
 
@@ -612,7 +606,7 @@ class RunContext(object):
         self.active = False
         self.results_tree = results
         if svp_dir is None or not os.path.isdir(svp_dir):
-            raise SVPError('Unknown run context directory: %s' % (svp_dir))
+            raise SVPError('Unknown run context directory: {}'.format(svp_dir))
         self.svp_dir = svp_dir
         self.files_dir = None
         self.results_dir = None
@@ -636,12 +630,6 @@ class RunContext(object):
         self.active_result = None
         self.status = None
 
-        #modification for UML purposes
-        '''
-        self.m = None
-        self.info = None
-        self.test_script = None
-        '''
     def is_alive(self):
         if self.process is not None:
             return self.process.is_alive()
@@ -813,23 +801,20 @@ class RunContext(object):
         try:
             self.test_conn, self.app_conn = multiprocessing.Pipe()
         except Exception as e:
-            print('Error creating execution context pipe: %s' % (e))
+            print ('Error creating execution context pipe: {}'.format(e))
 
         try:
             if config is not None:
                 script_config = copy.deepcopy(config)
             else:
                 script_config = None
-            # modification for UML purposes
-            '''
-            self.process = MultiProcess(name='svp_process', target=RunContext.process_run(), args=(filename, env, script_config,
-                                                                                      params, self.lib_path, self.test_conn))
-            '''
-            self.process = MultiProcess(name='svp_process', target=process_run, args=(filename, env, script_config, params, self.lib_path, self.test_conn))
+            self.process = MultiProcess(name='svp_process', target=process_run, args=(filename, env, script_config,
+                                                                                      params, self.lib_path,
+                                                                                      self.test_conn))
             self.process.start()
         except Exception as e:
             # raise
-            print('Error creating execution context process: %s' % (e))
+            print ('Error creating execution context process: {}'.format(e))
             try:
                 if self.process:
                     self.process.terminate()
@@ -845,7 +830,7 @@ class RunContext(object):
             try:
                 self.process.terminate()
             except Exception as e:
-                print('Process termination error: %s' % (e))
+                print ('Process termination error: {}'.format(e))
         self.status = script.RESULT_FAIL
         self.clean_up()
 
@@ -856,7 +841,7 @@ class RunContext(object):
                 self.app_conn.send({'op': RUN_MSG_CMD,
                                     'cmd': RUN_MSG_CMD_STOP})
         except Exception as e:
-            raise
+            raise e
 
     def clean_up(self):
         try:
@@ -935,7 +920,7 @@ class RunContext(object):
                         else:
                             raise SVPError('Unknown run message type: %s' % (type(msg)))
                     except Exception as e:
-                        entry = LogEntry('Error processing app connection for type %s: %s' % (type(msg), str(e)),
+                        entry = LogEntry('Error processing app connection for type {}: {}'.format(type(msg), str(e)),
                                          level=script.ERROR)
                         self.log(entry.timestamp_str(), entry.level, entry.message)
 
@@ -953,8 +938,8 @@ class RunContext(object):
         self.results.to_xml_file(self.results_file)
 
     def update_result(self, name=None, status=None, filename=None, params=None):
-        print('update_result: name=%s  status=%s  filename=%s  params=%s' % (str(name), str(status), str(filename),
-                                                                             str(params)))
+        print ('update_result: name={}  status={}  filename={}  params={}'.format((name), (status), (filename),
+                                                                             (params)))
         self.status = status
         if self.active_result is not None:
             if name is not None:
@@ -965,45 +950,17 @@ class RunContext(object):
                 self.active_result.filename = filename
             if params is not None:
                 self.active_result.params = params
-        print('writing results: %s' % (self.results_file))
+        print ('writing results: {}'.format(self.results_file))
         self.results.to_xml_file(self.results_file)
 
-    # modification for UML purposes
-    '''
-    def process_run(self, filename, env, config, params, lib_path, conn):
-        name = script_path = None
-        try:
-            sys.stdout = sys.stderr = open(os.path.join(trace_dir(), 'sunssvp_script.log'), "w", buffering=0)
-            script_path, name = os.path.split(filename)
-            name, ext = os.path.splitext(name)
-            if lib_path is not None:
-                sys.path.insert(0, lib_path)
-            sys.path.insert(0, script_path)
-            try:
-                # modification for UML purposes
-                self.m = importlib.import_module(name)
-                #self.m = VV
-                self.info = self.m.script_info()
-                self.test_script = RunScript(env=env, info=self.info, config=config, config_file=None, params=params, conn=conn)
-                self.m.run(self.test_script)
-            except Exception, e:
-                raise
-        finally:
-            if name in sys.modules:
-                del sys.modules[name]
-            if sys.path[0] == script_path:
-                del sys.path[0]
-            if lib_path is not None and sys.path[0] == lib_path:
-                del sys.path[0]
-    '''
     def alert(self, message):
-        print(message)
+        print ("{}".format(message))
 
     def confirm(self, message):
         pass
 
     def log(self, timestamp, level, message):
-        print('%s %s %s' % (timestamp, level, message))
+        print ('%s %s %s'.format(timestamp, level, message))
 
 
 #########################################################################################################
@@ -1019,8 +976,6 @@ APP_CFG_ATTR_NAME = 'name'
 APP_CFG_ATTR_TYPE = 'type'
 APP_CFG_DIRS = 'dirs'
 APP_CFG_DIR = 'dir'
-APP_CFG_LIBS = 'libs'
-APP_CFG_LIB = 'lib'
 APP_CFG_ATTR_WORKING = 'working'
 APP_CFG_ATTR_VAL_TRUE = 'true'
 APP_CFG_REG_PARAMS = 'reg_params'
@@ -1031,8 +986,8 @@ app_cfg_type = {'str': str, 'int': int, 'float': float, str: 'str', int: 'int', 
 """
     <appConfig name="TestTool">
       <dirs>
-        <dir working="true">C:\\Users\Fred\SunSpecTestTool</dir>
-        <dir>C:\\Users\Fred\SomeOtherDir</dir>
+        <dir working="true">C:\\Users\\Fred\\SunSpecTestTool</dir>
+        <dir>C:\\Users\Fred\\SomeOtherDir</dir>
       </dirs>
     </appConfig>
 
@@ -1080,7 +1035,6 @@ class SVP(object):
         self.app_id = app_id
         self.name = None
         self.dirs = []
-        self.libs = []
         self.config_file = config_filename('SVP')
         self.run_context = None
 
@@ -1093,7 +1047,11 @@ class SVP(object):
         self.suite = None
         self.env = {}
 
-        self.reg_params = {}
+        self.reg_params = {'name': '',
+                           'company': '',
+                           'email': '',
+                           'id': self.app_id,
+                           'key': ''}
 
         try:
             self.from_xml(filename=self.config_file)
@@ -1151,11 +1109,6 @@ class SVP(object):
                             else:
                                 working = False
                             self.dirs.append(Directory(d.text, working))
-            elif e.tag == APP_CFG_LIBS:
-                for l in e.findall('*'):
-                    if l.tag == APP_CFG_LIB:
-                        if l.text:
-                            print((l.text))
 
     def to_xml(self, parent=None, filename=None):
         attr = {}
@@ -1169,15 +1122,12 @@ class SVP(object):
 
         # registration params
         e_reg_params = ET.SubElement(e, APP_CFG_REG_PARAMS)
-        for k, v in self.reg_params.items():
+        for k, v in list(self.reg_params.items()):
             if v:
                 attr = {'name': k, 'type': app_cfg_type.get(type(v), 'str')}
-                print(attr)
                 e_param = ET.SubElement(e_reg_params, APP_CFG_PARAM, attrib=attr)
                 e_param.text = str(v)
         e_dirs = ET.SubElement(e, APP_CFG_DIRS)
-        e_libs = ET.SubElement(e, APP_CFG_LIBS)
-
 
         for d in self.dirs:
             attr = {}
@@ -1185,12 +1135,6 @@ class SVP(object):
                 attr[APP_CFG_ATTR_WORKING] = APP_CFG_ATTR_VAL_TRUE
             e_dir = ET.SubElement(e_dirs, APP_CFG_DIR, attrib=attr)
             e_dir.text = d.path
-
-        for l in self.libs:
-            attr = {}
-            attr[APP_CFG_ATTR_WORKING] = APP_CFG_ATTR_VAL_TRUE
-            e_dir = ET.SubElement(e_libs, APP_CFG_LIB, attrib=attr)
-            e_dir.text = l.path
 
         return e
 
@@ -1200,7 +1144,7 @@ class SVP(object):
         if pretty_print:
             script.xml_indent(e)
 
-        return ET.tostring(e)
+        return ET.tostring(e, encoding='unicode')
 
     def to_xml_file(self, filename=None, pretty_print=True, replace_existing=True):
         xml = self.to_xml_str(pretty_print)
@@ -1212,7 +1156,7 @@ class SVP(object):
             f.write(xml)
             f.close()
         else:
-            print(xml)
+            print (xml)
 
     def config_file_update(self):
         if self.config_file:
@@ -1225,12 +1169,6 @@ class SVP(object):
             self.dirs.append(d)
             self.config_file_update()
 
-    def add_library(self, path):
-        paths = self.get_library_paths()
-        if path not in paths:
-            l = Library(path)
-            self.libs.append(l)
-            self.config_file_update()
     def remove_directory(self, path):
         try:
             dir = None
@@ -1243,18 +1181,6 @@ class SVP(object):
                 self.config_file_update()
         except Exception as e:
             pass
-    def remove_library(self, path):
-        try:
-            lib = None
-            for d in self.libs:
-                if d.path == path:
-                    dir = d
-                    break
-            if lib is not None:
-                self.libs.remove(lib)
-                self.config_file_update()
-        except Exception as e:
-            pass
 
     def get_directory_paths(self):
         paths = []
@@ -1262,20 +1188,15 @@ class SVP(object):
             paths.append(d.path)
         return paths
 
-    def get_library_paths(self):
-        paths = []
-        for l in self.libs:
-            paths.append(l.path)
-        return paths
-
-    def get_config_file(self):
-        return self.config_file
-
 
 SVP_PROG_NAME = 'SVP'
 
 if __name__ == "__main__":
     # On Windows calling this function is necessary.
     multiprocessing.freeze_support()
+
+    app = SVP(1)
+    app.run({'svp_dir': 'c:/users/bob/pycharmprojects/svp test/',
+             'svp_file': 'suite_a.ste'})
 
 

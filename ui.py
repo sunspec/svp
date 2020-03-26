@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+
+
+
 """
 
 Copyright 2018, SunSpec Alliance
@@ -17,20 +20,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
+import textwrap
+from builtins import input
+from builtins import range
+
 
 import os
 import sys
 import multiprocessing
 import argparse
 import traceback
-import imp
+from importlib.machinery import SourceFileLoader as imp
 import importlib
 import datetime
 import time
 import struct
 import hashlib
 import glob
-#import multiprocessing
+import multiprocessing
 import wx
 import wx.adv
 import xlsxwriter
@@ -38,17 +45,13 @@ import xlsxwriter
 import numpy
 import wxmplot
 import shutil
-from wx.lib.embeddedimage import PyEmbeddedImage
-from wx.lib.wordwrap import wordwrap
-import json
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+
 
 import app as svp
 import result as rslt
 import script
 import svptreectrl as treectrl
-import textwrap
+
 '''
 import sunspec.core.util as util
 import sunspec.core.device as device_module
@@ -89,6 +92,8 @@ OP_COPY = 18
 OP_OPEN = 19
 OP_RESULT = 20
 OP_PKG = 30
+
+
 OP_ID_MIN = 1
 OP_ID_MAX = 20
 
@@ -100,20 +105,60 @@ ITEM_SUITE_MEMBERS = '__suite_members__'
 
 run_context_list = []
 
-
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
+
     except Exception:
         base_path = os.path.abspath(".")
-
     return os.path.join(base_path, relative_path)
 
 images_path = resource_path("images")
 
+'''
+def get_default_icon(filename):
+    "Retrieve the default icon of a filename"
+    (root, extension) = os.path.splitext(filename)
+    if extension:
+        value_name = _winreg.QueryValue(_winreg.HKEY_CLASSES_ROOT, extension)
+        try:
+            value_name = _winreg.QueryValue(_winreg.HKEY_CLASSES_ROOT, extension)
+        except _winreg.error:
+            value_name = None
+    else:
+        value_name = None
+    if value_name:
+         try:
+             icon = _winreg.QueryValue(_winreg.HKEY_CLASSES_ROOT, value_name + "\\DefaultIcon")
+         except _winreg.error:
+            icon = None
+    else:
+        icon = None
+    return icon
+'''
 
+'''
+def get_wx_icon(exe, index):
+    ico_x = win32api.GetSystemMetrics(win32con.SM_CXICON)
+    ico_y = win32api.GetSystemMetrics(win32con.SM_CYICON)
+    large, small = win32gui.ExtractIconEx(exe, index)
+    if len(small) == 0:
+        return False
+    win32gui.DestroyIcon(large[0])
+    hdc = win32ui.CreateDCFromHandle(win32gui.GetDC(0))
+    icon_bmp = win32ui.CreateBitmap()
+    icon_bmp.CreateCompatibleBitmap(hdc, ico_x, ico_y)
+    hdc = hdc.CreateCompatibleDC()
+    hdc.SelectObject(icon_bmp)
+    hdc.DrawIcon((0,0), small[0]) #draw the icon before getting bits
+    icon_info = icon_bmp.GetInfo()
+    icon_buffer = icon_bmp.GetBitmapBits(True)
+    icon = PILImage.frombuffer('RGB', (icon_info['bmWidth'], icon_info['bmHeight']), icon_buffer, 'raw', 'BGRX', 0, 1)
+    win32gui.DestroyIcon(small[0])
+    return icon
+'''
 
 def pil_to_image(pil, alpha=True):
     """Convert PIL Image to wx.Image."""
@@ -128,6 +173,21 @@ def pil_to_image(pil, alpha=True):
         image.SetData(data)
     return image
 
+'''
+def get_icon_image(filename):
+    try:
+        icon_path = get_default_icon(filename)
+        if '.exe,' in icon_path:
+            params = icon_path.split(',')
+            if len(params) == 2:
+                index = int(params[1])
+                pil = get_wx_icon(params[0], index)
+                if pil:
+                    image = pil_to_image(pil)
+                    return image
+    except Exception:
+        pass
+'''
 
 image_list = None
 images = {}
@@ -375,8 +435,7 @@ class EditSuiteDialog(wx.Dialog):
 
         members_box_sizer.Add(members_sizer, 1, wx.EXPAND|wx.LEFT|wx.TOP, 10)
         members_box_sizer.Add(members_avail_sizer, 1, wx.EXPAND|wx.RIGHT|wx.TOP, 10)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        window_sizer = wx.BoxSizer(wx.VERTICAL)
+
         params_panel = wx.Panel(window)
         self.params_panel = params_panel
         params_panel.panel_sizer = wx.GridBagSizer(hgap=30, vgap=0)
@@ -686,7 +745,7 @@ class EditSuiteDialog(wx.Dialog):
             if script.param_is_active(self.suite.param_defs, name, self.param_value) is not None:
                 if len(p.indexed_entries) > 0:
                     value = {'index_count': p.param.index_count, 'index_start': p.param.index_start}
-                    for key, v in p.indexed_entries.items():
+                    for key, v in list(p.indexed_entries.items()):
                         value[key] = p.param_value(index=key)
                     self.params[name] = value
                 else:
@@ -1290,7 +1349,7 @@ class EditTestDialog(wx.Dialog):
             if script.param_is_active(self.test_script.param_defs, name, self.param_value) is not None:
                 if p.index_count is not None:
                     value = {'index_count': p.index_count, 'index_start': p.index_start}
-                    for key, v in p.indexed_entries.items():
+                    for key, v in list(p.indexed_entries.items()):
                         value[key] = p.param_value(index=key)
                     self.params[name] = value
                 else:
@@ -1483,11 +1542,11 @@ class EntityTree(treectrl.CustomTreeCtrl):
                         ext_menu = op[1]
                 if ext_menu is not None:
                     submenu, submenu_enabled = self.create_ext_menu(ext_menu)
-                    menu_item = menu.Append(wx.ID_ANY, item[1], submenu)
+                    menu_item = menu.AppendSubMenu(submenu, item[1])
                     menu_item.Enable(submenu_enabled)
                 elif item[3] is not None:
                     submenu, submenu_enabled = self.create_menu(item[3], ops)
-                    menu_item = menu.Append(item[0], item[1], submenu)
+                    menu_item = menu.AppendSubMenu(submenu, item[1])
                     menu_item.Enable(submenu_enabled)
                 else:
                     menu_item = menu.Append(item[0], item[1], item[2])
@@ -1507,7 +1566,7 @@ class EntityTree(treectrl.CustomTreeCtrl):
             if item[0]:
                 if item[2] is not None:
                     submenu, submenu_enabled = self.create_ext_menu(item[2])
-                    menu_item = menu.Append(wx.ID_ANY, item[0], submenu)
+                    menu_item = menu.AppendSubMenu(submenu, item[0])
                     menu_item.Enable(submenu_enabled)
                     if submenu_enabled:
                         enabled = True
@@ -1539,7 +1598,7 @@ class EntityTree(treectrl.CustomTreeCtrl):
             if item[1]:
                 if item[3] is not None:
                     submenu = self.create_popup_menu(item[3])
-                    menu_item = menu.Append(item[0], item[1], submenu)
+                    menu_item = menu.AppendSubMenu(submenu, item[1])
                 else:
                     menu_item = menu.Append(item[0], item[1], item[2])
                 # menu_item.Enable(False)
@@ -2409,11 +2468,11 @@ class WorkingDirectory(Directory):
                 m_name = name[8:]
                 if m_name not in self.svp_ext:
                     try:
-                        m = imp.load_source(i_name, f)
+                        m = imp(i_name, f).load_module()
                         self.svp_ext[m_name] = m
-                        print('Imported svp ext: %s %s %s\n%s' % (f, m_name, i_name, str(self.svp_ext)))
+                        print('Imported svp ext: {} {} {}\n{}'.format(f, m_name, i_name, (self.svp_ext)))
                     except Exception as e:
-                        print('Error importing %s: %s' % (f, str(e)))
+                        print('Error importing %s: %s'.format(f, (e)))
         files = glob.glob(os.path.join(d, '*'))
         for f in files:
             if os.path.isdir(f):
@@ -3729,7 +3788,6 @@ class TestEntry(EntityTreeEntry):
         title.SetBackgroundColour('white')
         logo_sizer = wx.BoxSizer(wx.VERTICAL)
         logo_h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        print((title,wx.Bitmap(os.path.join(images_path, 'test_32.gif'))))
         bitmap = wx.StaticBitmap(parent=title, bitmap=wx.Bitmap(os.path.join(images_path, 'test_32.gif')))
         text = wx.StaticText(title, -1, self.name.split('.')[0])
         text.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.NORMAL))
@@ -3999,6 +4057,35 @@ class SuiteTestEntry(EntityTreeEntry):
 
         return info_panel
 
+'''
+class AppWx(app.App):
+    def __init__(self, window, app_id, config_file=None):
+        self.window = window
+        self.run_window = None
+        self.dir_tree = None
+        self.config_file = config_file
+        app.App.__init__(self, app_id, config_file=config_file)
+
+    def confirm(self, message):
+        retCode = wx.MessageBox(message, caption='Confirm', style=wx.YES_NO | wx.ICON_QUESTION)
+        if (retCode == wx.YES):
+            return True
+        return False
+
+    def log(self, entry):
+        if self.run_window:
+            self.run_window.log(entry)
+        # app.App.log(self, entry)
+
+    def alertx(self, message):
+        wx.MessageBox(message, caption='Alert', style=wx.OK | wx.ICON_ERROR)
+
+    def state_update(self, status=None):
+        if self.run_window:
+            self.run_window.state_update(status)
+        app.App.state_update(self)
+'''
+
 class ToolFrame(wx.Frame):
 
     menu_new_items = [(wx.ID_ANY, 'Directory...', '', None, OP_NEW_DIR),
@@ -4097,7 +4184,7 @@ class ToolFrame(wx.Frame):
             if item[1]:
                 if item[3] is not None:
                     submenu, submenu_enabled = self.create_menu(item[3], ops)
-                    menu_item = menu.Append(item[0], item[1], submenu)
+                    menu_item = menu.AppendSubMenu(submenu, item[1])
                     menu_item.Enable(submenu_enabled)
                 else:
                     menu_item = menu.Append(item[0], item[1], item[2])
@@ -4125,6 +4212,7 @@ class ToolFrame(wx.Frame):
         ops[OP_EXIT] = (self.OnExit, None)
         ops[OP_PKG] = (self.OnPackage, None)
         ops[OP_ABOUT] = (self.OnAbout, None)
+
         self.entity_tree.update_menu_ops(ops)
         return ops
 
@@ -4170,21 +4258,15 @@ class ToolFrame(wx.Frame):
                              desc= "For mor information visit SunSpec website")
         #aboutInfo.AddDeveloper("My Self")
         wx.adv.AboutBox(aboutInfo)
-    def OnPackage(self, evt):
-        dialog = wx.DirDialog(None, "Choose a 'site-package' directory for python package:", style = wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
-        try:
-            if dialog.ShowModal() == wx.ID_OK:
-                path = dialog.GetPath()
-                print(path)
-                if ("site-packages" in os.path.basename(os.path.normpath(path))):
-                    self.svp.add_library(path)
-                    for path in self.svp.get_library_paths():
-                        sys.path.insert(1,path)
-                else :
-                    raise ValueError
-        except ValueError:
-            wx.MessageBox('Not a valid "site-packages" python directory.', 'Invalid directory', wx.OK | wx.ICON_EXCLAMATION)
 
+    def OnPackage(self, evt):
+        dialog = wx.DirDialog(None, "Choose a directory for python package:", style = wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
+        if dialog.ShowModal() == wx.ID_OK:
+            path = dialog.GetPath()
+            if path:
+                sys.path.insert(1, path)
+            for p in sys.path:
+                print(p)
 
         dialog.Destroy()
 
@@ -4199,6 +4281,43 @@ class ToolFrame(wx.Frame):
         if run_context_list:
             for rc in run_context_list:
                 rc.periodic()
+
+class PackageDialog(wx.Dialog):
+    def __init__(self, parent, title):
+        super(PackageDialog, self).__init__(parent, title=title, size=(300, 200))
+
+        self.InitUI()
+
+    def InitUI(self):
+        self.count = 0
+        pnl = wx.Panel(self)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+
+        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.text = wx.TextCtrl(pnl, size=(250, 25), style=wx.TE_READONLY)
+        self.btn1 = wx.Button(pnl, label="Enter Text")
+        self.Bind(wx.EVT_BUTTON, self.OnClick, self.btn1)
+
+        hbox1.Add(self.text, proportion=1, flag=wx.ALIGN_CENTRE)
+        hbox2.Add(self.btn1, proportion=1, flag=wx.RIGHT, border=10)
+
+        vbox.Add((0, 30))
+        vbox.Add(hbox1, flag=wx.ALIGN_CENTRE)
+        vbox.Add((0, 20))
+        vbox.Add(hbox2, proportion=1, flag=wx.ALIGN_CENTRE)
+
+        pnl.SetSizer(vbox)
+        self.Centre()
+        self.Show(True)
+
+    def OnClick(self, e):
+        dlg = wx.TextEntryDialog(self, 'Enter Your Name', 'Text Entry Dialog')
+
+        if dlg.ShowModal() == wx.ID_OK:
+            self.text.SetValue("Name entered:" + dlg.GetValue())
+        dlg.Destroy()
 
 class ResultDialog(wx.Dialog):
     def __init__(self, parent=None, results=None, result_dir=None, result_name=None, title=None, image_list=None):
@@ -4309,6 +4428,7 @@ class ResultPanel(wx.Panel):
         self.info_log.AppendText(' %s  %s\n' % (level, message))
         self.info_log.SetDefaultStyle(wx.TextAttr(wx.BLACK))
 
+
 class ResultTree(treectrl.CustomTreeCtrl):
 
     def __init__(self, parent, entity=None, result_dir=None, result=None, image_path='', run_window=None,
@@ -4404,6 +4524,7 @@ class ResultTree(treectrl.CustomTreeCtrl):
                 else:
                     self.render_info(entry)
 
+
 class ResultEntry_(object):
     def __init__(self, run_tree=None, parent=None, image=None, entity=None, result=None):
         self.run_tree = run_tree
@@ -4487,6 +4608,7 @@ class ResultEntry_(object):
 
         return info_panel
 
+
 class RunCtrl(object):
     def __init__(self, parent, run_panel):
         self.parent = parent
@@ -4514,6 +4636,7 @@ class RunCtrl(object):
 
     def stop(self, event):
         self.run_panel.run_tree.run_context.stop()
+
 
 class RunPanel(wx.Panel):
     def __init__(self, parent, entity, title=None):
@@ -4593,6 +4716,7 @@ class RunPanel(wx.Panel):
             self.info_log.SetDefaultStyle(wx.TextAttr(wx.BLACK))
         self.info_log.AppendText(' %s  %s\n' % (level, message))
         self.info_log.SetDefaultStyle(wx.TextAttr(wx.BLACK))
+
 
 class RunTree(treectrl.CustomTreeCtrl):
 
@@ -4825,11 +4949,12 @@ class RunEntry(object):
         if self.result.filename is not None:
             limit = 0
             filename = os.path.join(self.run_tree.run_context.results_dir, self.result.filename)
+            # "ext" extracts the extension from the filename
             ext = os.path.splitext(filename)[1]
             if ext != svp.LOG_EXT:
                 limit = 1000
             f = open(filename)
-
+            #TODO : need to be handle when it is a excel file
             for entry in f:
                 if len(entry) > 27 and entry[4] == '-' and entry[7] == '-' and entry[13] == ':' and entry[16] == ':':
                     info_log.SetDefaultStyle(wx.TextAttr((26, 13, 171)))
@@ -4888,6 +5013,7 @@ class RunContext(svp.RunContext):
             self.run_tree.complete()
         svp.RunContext.complete(self)
 
+
 class RunDialog(wx.Dialog):
     def __init__(self, entity=None, title=None):
         wx.Dialog.__init__(self, parent=None, title='Result', size=(1250,600), pos=(100,100),
@@ -4911,10 +5037,10 @@ class RunDialog(wx.Dialog):
                 count -= 1
         self.Destroy()
 
+
 class Tool(object):
     def __init__(self):
         self.xyz = None
-        self.id= None
         try:
             import win32api
 
@@ -4926,9 +5052,8 @@ class Tool(object):
     def run(self, args=None):
         if args is not None:
             try:
-                # modification for UML purposes
-                self.svp_cmd = svp.SVP(self.id)
-                self.svp_cmd.run({'svp_dir': args.svp_dir,
+                svp_cmd = svp.SVP(self.id)
+                svp_cmd.run({'svp_dir': args.svp_dir,
                              'svp_file': args.target})
                 '''
                 app_cmd.run(args.svp_dir, args.target, args.result)
@@ -4938,7 +5063,7 @@ class Tool(object):
                 '''
             except Exception as e:
                 # raise
-                print('sunssvp: error: %s' % (str(e)))
+                print ('sunssvp: error: {}'.format((e)))
                 return 1
         else:
             self.wx_app = wx.App(False)
@@ -4961,7 +5086,8 @@ def main(args=None):
 
 if __name__ == "__main__":
 
-    #sys.stdout = sys.stderr = open(os.path.join(svp.trace_dir(), 'sunssvp.log'), "w", buffering=0)
+    # sys.stdout = sys.stderr = open(os.path.join(svp.trace_dir(), 'sunssvp.log'), "w", buffering=0)
+
     # On Windows calling this function is necessary.
     multiprocessing.freeze_support()
 
@@ -4971,5 +5097,6 @@ if __name__ == "__main__":
         parser.add_argument('svp_dir', help='SVP directory')
         parser.add_argument('target', help='suite/test/script in SVP directory')
         args = parser.parse_args()
+
     err = main(args)
     sys.exit(err)

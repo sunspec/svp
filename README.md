@@ -1,4 +1,4 @@
-![SVP Logo](doc/OpenSVP.png?raw=true)
+![SVP Logo](images/OpenSVP.png?raw=true)
 
 ---
 

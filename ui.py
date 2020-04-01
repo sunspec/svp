@@ -436,7 +436,10 @@ class EditSuiteDialog(wx.Dialog):
         members_box_sizer.Add(members_sizer, 1, wx.EXPAND|wx.LEFT|wx.TOP, 10)
         members_box_sizer.Add(members_avail_sizer, 1, wx.EXPAND|wx.RIGHT|wx.TOP, 10)
 
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        window_sizer = wx.BoxSizer(wx.VERTICAL)
         params_panel = wx.Panel(window)
+
         self.params_panel = params_panel
         params_panel.panel_sizer = wx.GridBagSizer(hgap=30, vgap=0)
         params_panel.panel_sizer.SetEmptyCellSize((0,0))

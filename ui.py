@@ -2475,7 +2475,8 @@ class WorkingDirectory(Directory):
                         self.svp_ext[m_name] = m
                         print('Imported svp ext: {} {} {}\n{}'.format(f, m_name, i_name, (self.svp_ext)))
                     except Exception as e:
-                        print('Error importing %s: %s'.format(f, (e)))
+                        print(f"Error importing {f}")
+                        print(f"Error message : {e}")
         files = glob.glob(os.path.join(d, '*'))
         for f in files:
             if os.path.isdir(f):

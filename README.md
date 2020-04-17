@@ -17,6 +17,10 @@ For the contribution list, please refer to [Contribution section](doc/CONTRIB.md
 
 Please refer to the [Install section](doc/INSTALL.md) for detailed instruction
 
+### SVP Scripts
+
+There is a few scripts derived from the [IEEE 1547.1 standard][1547-1-url]
+
 ### Support
 
 For any bugs/issues, please refer to the [bug tracker][bug-tracker-url] section.
@@ -25,3 +29,4 @@ For any bugs/issues, please refer to the [bug tracker][bug-tracker-url] section.
 🐙 was here.
 
 [bug-tracker-url]: https://github.com/BuiMCanmet/svp/issues
+[1547-1-url]: https://github.com/BuiMCanmet/svp_1547.1/tree/master_python37

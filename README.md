@@ -9,31 +9,19 @@
 This repository contains all of the open-source OpenSVP components written in Python 3.7
 
 
-### Published packages
-
-| Package                                                     | Version | Description                                                            |
-| ----------------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
-| [`@sunspec/pysunspec`][pysunspec-url]                       | 2.0.0   | Custom library packages needed to run OpenSVP                          |
-
 ## Contribution
 
-OpenSVP is free and open-source.
-The platform has been developped by Sunspec, Sandia and CanmetENERGY
+For the contribution list, please refer to [Contribution section](doc/CONTRIB.md)
 
-### Install dependencies
+### Installation
 
-The list packages required are included in ./svp_requirements 
+Please refer to the [Install section](doc/INSTALL.md) for detailed instruction
 
-Set up all dependencies:
+### Support
 
-from the root directory:
-
-```bash
-cd /opensvp_dir
-pip install -r svp_requirements
-```
+For any bugs/issues, please refer to the [bug tracker][bug-tracker-url] section.
 
 
 🐙 was here.
 
-[pysunspec-url]: https://github.com/sunspec/pysunspec
+[bug-tracker-url]: https://github.com/BuiMCanmet/svp/issues

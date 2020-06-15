@@ -30,8 +30,4 @@ For any bugs/issues, please refer to the [bug tracker][bug-tracker-url] section.
 
 [bug-tracker-url]: https://github.com/BuiMCanmet/svp/issues
 [1547-1-url]: https://github.com/BuiMCanmet/svp_1547.1/tree/master_python37
-=======
-# svp
-System Validation Platform
 
-Note that you may want the packages listed in requirements.txt for running the SVP.

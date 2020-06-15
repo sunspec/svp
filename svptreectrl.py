@@ -1,3 +1,6 @@
+
+
+
 # --------------------------------------------------------------------------------- #
 # CUSTOMTREECTRL wxPython IMPLEMENTATION
 # Inspired By And Heavily Based On wxGenericTreeCtrl.
@@ -307,6 +310,9 @@ Version 2.6
 
 # Version Info
 __version__ = "2.6"
+
+from builtins import input
+from builtins import range
 
 import wx
 from wx.lib.expando import ExpandoTextCtrl
@@ -2531,14 +2537,14 @@ class GenericTreeItem(object):
                 if wx.Platform == "__WXMAC__":
                     # according to the drawing code the triangels are drawn
                     # at -4 , -4  from the position up to +10/+10 max
-                    if point.x > xCross-4 and point.x < xCross+10 and point.y > y_mid-4 and \
+                    if point[0] > xCross-4 and point[0] < xCross+10 and point.y > y_mid-4 and \
                        point.y < y_mid+10 and self.HasPlus() and theCtrl.HasButtons():
 
                         flags |= TREE_HITTEST_ONITEMBUTTON
                         return self, flags
                 else:
                     # 5 is the size of the plus sign
-                    if point.x > xCross-6 and point.x < xCross+6 and point.y > y_mid-6 and \
+                    if point[0] > xCross-6 and point[0] < xCross+6 and point.y > y_mid-6 and \
                        point.y < y_mid+6 and self.HasPlus() and theCtrl.HasButtons():
 
                         flags |= TREE_HITTEST_ONITEMBUTTON
@@ -6230,7 +6236,7 @@ class CustomTreeCtrl(wx.ScrolledWindow):
             sz = imageList.GetSize(0)
             self._grayedImageListStatus = wx.ImageList(sz[0], sz[1], True, 0)
 
-            for ii in xrange(imageList.GetImageCount()):
+            for ii in range(imageList.GetImageCount()):
                 bmp = imageList.GetBitmap(ii)
                 newbmp = MakeDisabledBitmap(bmp)
                 self._grayedImageListStatus.Add(newbmp)
@@ -7610,7 +7616,7 @@ class CustomTreeCtrl(wx.ScrolledWindow):
         w, h = self.GetSize()
         flags = 0
 
-        pointX, pointY = point[0], point[1]
+        pointX, pointY = point.x, point.y
         if pointX < 0:
             flags |= TREE_HITTEST_TOLEFT
         if pointX > w:

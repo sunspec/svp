@@ -1,5 +1,5 @@
 pyVISA==1.9.1
-PyYAML==3.13
+PyYAML==5.1
 Pypubsub==4.0.0
 XlsxWriter==1.1.0
 backports.functools-lru-cache==1.5

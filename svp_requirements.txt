@@ -18,7 +18,7 @@ git+https://github.com/sunspec/pysunspec#egg=pysunspec
 python-dateutil==2.8.0
 pytz==2019.1
 PyVISA==1.9.1
-PyYAML==5.1.1
+PyYAML==5.1
 serial==0.0.97
 six==1.12.0
 typing==3.7.4

@@ -14,7 +14,7 @@ PyDAQmx==1.4.2
 pymodbus==2.2.0
 pyparsing==2.4.0
 pyserial==3.4
-git+https://github.com/sunspec/pysunspec@Master#egg=pysunspec
+git+https://github.com/sunspec/pysunspec@master#egg=pysunspec
 python-dateutil==2.8.0
 pytz==2019.1
 PyVISA==1.9.1

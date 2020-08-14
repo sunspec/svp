@@ -13,21 +13,34 @@ This repository contains all of the open-source OpenSVP components written in Py
 
 For the contribution list, please refer to [Contribution section](doc/CONTRIB.md)
 
-### Installation
+## Installation
 
 Please refer to the [Install section](doc/INSTALL.md) for detailed instruction
 
-### SVP Scripts
+## Scripts, Tests and Suites
 
-There is a few scripts derived from the [IEEE 1547.1 standard][1547-1-url]
+### UL1741 SA standard 
+Here is the repo [UL1741 SA repository][1741SA-url] make sure to use the "dev" branch
+
+### IEEE 1547.1 standard 
+The latest version is 1.4.2 and here is the repo [IEEE 1547.1 repository][1547-1-url]. Make sure to use the library (p1547.py) with the same version.
+
+### DR_AS-NZS 4777.2 standard 
+The latest version is 1.0.1 and here is the repo [DR_AS-NZS 4777.2 repository][4777-2-url]. Make sure to use the library (pAus4777.py) with the same version.
+
+## Drivers
+### SVPELAB
+The SVPELAB is the repository use by the SIRFN members. It tries to assemble all the equipment from different manufacturer(Grid simulator, PV simulator, Data acquisition system, HILs, etc.) in a single repo [SVPELAB repository][svpelab-url].
 
 ### Support
 
 For any bugs/issues, please refer to the [bug tracker][bug-tracker-url] section.
 
 
-🐙 was here.
 
-[bug-tracker-url]: https://github.com/BuiMCanmet/svp/issues
+[bug-tracker-url]: https://github.com/sunspec/svp/issues
 [1547-1-url]: https://github.com/BuiMCanmet/svp_1547.1/tree/master_python37
+[1741SA-url]: https://github.com/sunspec/svp_UL1741SA/tree/dev/UL1741%20SA
+[4777-2-url]: https://github.com/BuiMCanmet/DR_AS-NZS-Scripts/tree/master
+[svpelab-url]: https://github.com/sunspec/svp_energy_lab/tree/dev37
 

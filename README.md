@@ -39,8 +39,8 @@ For any bugs/issues, please refer to the [bug tracker][bug-tracker-url] section.
 
 
 [bug-tracker-url]: https://github.com/sunspec/svp/issues
-[1547-1-url]: https://github.com/jayatsandia/svp_1547.1/tree/master3.7
+[1547-1-url]: https://github.com/jayatsandia/svp_1547.1
 [1741SA-url]: https://github.com/sunspec/svp_UL1741SA/tree/dev/UL1741%20SA
-[4777-2-url]: https://github.com/BuiMCanmet/DR_AS-NZS-Scripts/tree/master
-[svpelab-url]: https://github.com/sunspec/svp_energy_lab/tree/dev37
+[4777-2-url]: https://github.com/BuiMCanmet/DR_AS-NZS-Scripts
+[svpelab-url]: https://github.com/sunspec/svp_energy_lab
 

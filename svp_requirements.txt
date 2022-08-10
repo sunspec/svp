@@ -28,3 +28,5 @@ wxPython
 XlsxWriter
 natsort
 urllib3
+pyvisa
+openpyxl

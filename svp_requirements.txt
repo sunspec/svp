@@ -14,7 +14,8 @@ PyDAQmx
 pymodbus
 pyparsing
 pyserial
-git+https://github.com/sunspec/pysunspec@master#egg=pysunspec
+pysunspec
+pysunspec2
 python-dateutil
 pytz
 PyVISA

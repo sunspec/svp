@@ -24,7 +24,7 @@ serial
 six
 typing
 wxmplot
-wxPython==4.0.7.post2
+wxPython
 XlsxWriter
 natsort
 urllib3

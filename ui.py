@@ -3262,7 +3262,7 @@ class ScriptEntry(EntityTreeEntry):
             ### try to catch all exceptions if bitmap read fails
             bitmap = wx.Bitmap(os.path.join(logo_path, svp.SCRIPTS_DIR, logo))
             logo_h_sizer.Add(wx.StaticBitmap(parent=title, bitmap=bitmap), 0, wx.LEFT, 10)
-        logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM)
+        # logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM)
 
         params_panel = wx.Panel(info_panel, -1)
         params_panel.panel_sizer = wx.GridBagSizer(hgap=30, vgap=0)
@@ -3581,7 +3581,7 @@ class SuiteEntry(EntityTreeEntry):
             ### try to catch all exceptions if bitmap read fails
             bitmap = wx.Bitmap(os.path.join(logo_path, svp.SCRIPTS_DIR, logo))
             logo_h_sizer.Add(wx.StaticBitmap(parent=title, bitmap=bitmap), 0, wx.LEFT, 10)
-        logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
+        # logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
 
         row = 0
         params_panel = wx.Panel(info_panel, -1)
@@ -3803,7 +3803,7 @@ class TestEntry(EntityTreeEntry):
             ### try to catch all exceptions if bitmap read fails
             bitmap = wx.Bitmap(os.path.join(logo_path, svp.SCRIPTS_DIR, logo))
             logo_h_sizer.Add(wx.StaticBitmap(parent=title, bitmap=bitmap), 0, wx.LEFT, 10)
-        logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
+        # logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
 
         row = 0
         params_panel = wx.Panel(info_panel, -1)
@@ -3916,7 +3916,7 @@ class SuiteSuiteEntry(EntityTreeEntry):
             ### try to catch all exceptions if bitmap read fails
             bitmap = wx.Bitmap(os.path.join(logo_path, svp.SCRIPTS_DIR, logo))
             logo_h_sizer.Add(wx.StaticBitmap(parent=title, bitmap=bitmap), 0, wx.LEFT, 10)
-        logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
+        # logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
 
         row = 0
         params_panel = wx.Panel(info_panel, -1)
@@ -4023,7 +4023,7 @@ class SuiteTestEntry(EntityTreeEntry):
             ### try to catch all exceptions if bitmap read fails
             bitmap = wx.Bitmap(os.path.join(logo_path, svp.SCRIPTS_DIR, logo))
             logo_h_sizer.Add(wx.StaticBitmap(parent=title, bitmap=bitmap), 0, wx.LEFT, 10)
-        logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
+        # logo_sizer.Add(logo_h_sizer, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.LEFT, 60)
 
         row = 0
         params_panel = wx.Panel(info_panel, -1)

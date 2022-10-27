@@ -2,11 +2,6 @@
 
 # Set the git directories to pull down code
 SSH_OR_HTTPS="SSH"
- 
-# Read the array values with space
-for val in "${StringArray[@]}"; do
-  echo $val
-done
 
 if [[ "$SSH_OR_HTTPS" == "HTTPS" ]]; then
     echo "Cloning repositories using the $SSH_OR_HTTPS method."
@@ -32,7 +27,7 @@ else
     "git@github.com:jayatsandia/svp_energy_lab.git" \
     "git@github.com:jayatsandia/svp_additional_tools.git" \
     #"git@github.com:jayatsandia/svp_additional_tools.git"\
-)
+    )
 
 fi
 

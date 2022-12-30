@@ -18,15 +18,12 @@ pysunspec
 pysunspec2
 python-dateutil
 pytz
-PyVISA
 PyYAML
 serial
 six
-typing
 wxmplot
 wxPython
 XlsxWriter
 natsort
 urllib3
 pyvisa
-openpyxl

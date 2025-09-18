@@ -14,11 +14,10 @@ PyDAQmx
 pymodbus
 pyparsing
 pyserial
-pysunspec
-pysunspec2
+git+https://github.com/sunspec/pysunspec@master#egg=pysunspec
 python-dateutil
 pytz
-PyVISA
+PyVISA==1.9.0
 PyYAML
 serial
 six
@@ -27,3 +26,5 @@ wxmplot
 wxPython==4.0.7.post2
 XlsxWriter
 natsort
+psutil
+scipy

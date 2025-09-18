@@ -197,7 +197,7 @@ class Directory(object):
 
 '''
     Suite
-'''''
+'''
 
 # suite xml elements and attributes
 SUITE_ROOT = 'suite'
@@ -230,7 +230,15 @@ def member_update(path, old_name, new_name):
     except Exception as e:
         raise SVPError('Error on member update - directory %s: %s' % (path, str(e)))
 
+
 class Suite(object):
+    ############################################################################################################################
+    # A suite is the the main block for doing parametric testing. It compiles the tests inside the suite.
+    # It is also possible to nest suites inside suites, all the tests inside the nested suites are compiled as well.
+    # The nesting of suite is interesting, because it allows to do parametric testing on the parameters of the suite.
+    # The parent suite equipements parameters has the priority over the ones of the childs suites (descendants - desc)
+    # and over the test.
+    ############################################################################################################################
     def __init__(self, name=None, desc=None, filename=None, parent=None):
         self.name = name
         self.globals = True
@@ -260,7 +268,17 @@ class Suite(object):
             return member
 
     def member_update(self, old_name, new_name):
-        # print 'member_update: %s  %s  %s' % (self.filename, old_name, new_name)
+        """
+        Updates the members list of a Suite object by replacing an old member name with a new member name.
+        
+        Args:
+            old_name (str): The old member name to be replaced.
+            new_name (str): The new member name to replace the old one.
+        
+        Returns:
+            Nothing, but modifies the members list of the Suite object.
+        """
+                # print 'member_update: %s  %s  %s' % (self.filename, old_name, new_name)
         updated = False
         members = []
         for i in range(len(self.members)):
@@ -278,7 +296,18 @@ class Suite(object):
             self.members = members
             self.to_xml_file()
 
+
     def merge_suite(self, suite, working_dir):
+        """
+        Merges the suite of test scripts and parameters into the current Suite object.
+        
+        This method iterates through the members of the given Suite object, and for each member:
+        - If the member is a suite file, it recursively merges the member suite into the current Suite.
+        - If the member is a test file, it loads the script configuration, adds the script to the list of scripts 
+            in the current Suite, and merges any global parameters defined in the script into the current Suite's parameter 
+            definitions.
+        - It also merges any logos defined in the test scripts into the current Suite's list of logos.
+        """
         for m in suite.members:
           try:
             if is_suite_file(m):
@@ -1029,6 +1058,8 @@ def config_filename(app_name):
 
     return os.path.join(config_dir, app_name + CONFIG_FILE_EXT)
 
+
+
 class SVP(object):
 
     def __init__(self, app_id):
@@ -1147,6 +1178,7 @@ class SVP(object):
         return ET.tostring(e, encoding='unicode')
 
     def to_xml_file(self, filename=None, pretty_print=True, replace_existing=True):
+    # 
         xml = self.to_xml_str(pretty_print)
 
         if filename is not None:
@@ -1159,10 +1191,12 @@ class SVP(object):
             print (xml)
 
     def config_file_update(self):
+    # update config file with current state
         if self.config_file:
             self.to_xml_file(self.config_file)
 
     def add_directory(self, path):
+    # add directory to config file if it doesn't exist
         paths = self.get_directory_paths()
         if path not in paths:
             d = Directory(path)
@@ -1170,6 +1204,7 @@ class SVP(object):
             self.config_file_update()
 
     def remove_directory(self, path):
+    # remove directory from config file if it exists
         try:
             dir = None
             for d in self.dirs:
@@ -1183,6 +1218,7 @@ class SVP(object):
             pass
 
     def get_directory_paths(self):
+    # return list of directory paths
         paths = []
         for d in self.dirs:
             paths.append(d.path)

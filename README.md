@@ -29,8 +29,8 @@ The latest version is 1.4.2 and here is the repo [IEEE 1547.1 repository][1547-1
 The latest version is 1.0.1 and here is the repo [DR_AS-NZS 4777.2 repository][4777-2-url]. Make sure to use the library (pAus4777.py) with the same version.
 
 ## Drivers
-### SVPELAB
-The SVPELAB is the repository use by the SIRFN members. It tries to assemble all the equipment from different manufacturer(Grid simulator, PV simulator, Data acquisition system, HILs, etc.) in a single repo [SVPELAB repository][svpelab-url].
+### SVPELAB - driver repository
+The SVPELAB is the repository use by the SIRFN members. It tries to assemble all the equipment from different manufacturers in a single repo to integrate them into the SVP framework  (Grid simulator, PV simulator, Data acquisition system, HILs, etc.)  [SVPELAB repository][svpelab-url].
 
 ### Support
 
@@ -39,8 +39,7 @@ For any bugs/issues, please refer to the [bug tracker][bug-tracker-url] section.
 
 
 [bug-tracker-url]: https://github.com/sunspec/svp/issues
-[1547-1-url]: https://github.com/jayatsandia/svp_1547.1/tree/master3.7
+[1547-1-url]: https://github.com/sandialabs/svp_1547.1
 [1741SA-url]: https://github.com/sunspec/svp_UL1741SA/tree/dev/UL1741%20SA
 [4777-2-url]: https://github.com/BuiMCanmet/DR_AS-NZS-Scripts/tree/master
 [svpelab-url]: https://github.com/sunspec/svp_energy_lab/tree/dev37
-

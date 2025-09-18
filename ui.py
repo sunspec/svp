@@ -91,8 +91,6 @@ OP_ABOUT = 17
 OP_COPY = 18
 OP_OPEN = 19
 OP_RESULT = 20
-OP_PKG = 30
-
 
 OP_ID_MIN = 1
 OP_ID_MAX = 20
@@ -110,9 +108,9 @@ def resource_path(relative_path):
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
-
     except Exception:
         base_path = os.path.abspath(".")
+
     return os.path.join(base_path, relative_path)
 
 images_path = resource_path("images")
@@ -435,11 +433,9 @@ class EditSuiteDialog(wx.Dialog):
 
         members_box_sizer.Add(members_sizer, 1, wx.EXPAND|wx.LEFT|wx.TOP, 10)
         members_box_sizer.Add(members_avail_sizer, 1, wx.EXPAND|wx.RIGHT|wx.TOP, 10)
-
         sizer = wx.BoxSizer(wx.VERTICAL)
         window_sizer = wx.BoxSizer(wx.VERTICAL)
         params_panel = wx.Panel(window)
-
         self.params_panel = params_panel
         params_panel.panel_sizer = wx.GridBagSizer(hgap=30, vgap=0)
         params_panel.panel_sizer.SetEmptyCellSize((0,0))
@@ -2473,10 +2469,9 @@ class WorkingDirectory(Directory):
                     try:
                         m = imp(i_name, f).load_module()
                         self.svp_ext[m_name] = m
-                        print('Imported svp ext: {} {} {}\n{}'.format(f, m_name, i_name, (self.svp_ext)))
+                        print ('Imported svp ext: {} {} {}\n{}'.format(f, m_name, i_name, (self.svp_ext)))
                     except Exception as e:
-                        print(f"Error importing {f}")
-                        print(f"Error message : {e}")
+                        print ('Error importing %s: %s'.format(f, (e)))
         files = glob.glob(os.path.join(d, '*'))
         for f in files:
             if os.path.isdir(f):
@@ -4117,7 +4112,7 @@ class ToolFrame(wx.Frame):
                        # (wx.ID_ANY,'Remove', '', None, OP_REMOVE),
                        # (wx.ID_ANY,'Move Up', '', None, OP_MOVE_UP),
                        # (wx.ID_ANY,'Move Down', '', None, OP_MOVE_DOWN)]
-    menu_pkg_items = [(wx.ID_ANY, 'Library', '', None, OP_PKG)]
+
     menu_help_items = [(wx.ID_ANY, 'About', '', None, OP_ABOUT)]
 
     def __init__(self, parent, title, id):
@@ -4174,8 +4169,6 @@ class ToolFrame(wx.Frame):
         menu_bar.Append(file_menu, 'File')
         edit_menu, enabled = self.create_menu(ToolFrame.menu_edit_items, ops)
         menu_bar.Append(edit_menu, 'Edit')
-        package_menu, enabled = self.create_menu(ToolFrame.menu_pkg_items, ops)
-        menu_bar.Append(package_menu, 'Package')
         help_menu, enabled = self.create_menu(ToolFrame.menu_help_items, ops)
         menu_bar.Append(help_menu, 'Help')
         self.SetMenuBar(menu_bar)
@@ -4214,9 +4207,7 @@ class ToolFrame(wx.Frame):
             ops = {}
         ops[OP_ADD_WORKING_DIR] = (self.OnAddWorkingDir, None)
         ops[OP_EXIT] = (self.OnExit, None)
-        ops[OP_PKG] = (self.OnPackage, None)
         ops[OP_ABOUT] = (self.OnAbout, None)
-
         self.entity_tree.update_menu_ops(ops)
         return ops
 
@@ -4263,18 +4254,6 @@ class ToolFrame(wx.Frame):
         #aboutInfo.AddDeveloper("My Self")
         wx.adv.AboutBox(aboutInfo)
 
-    def OnPackage(self, evt):
-        dialog = wx.DirDialog(None, "Choose a directory for python package:", style = wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
-        if dialog.ShowModal() == wx.ID_OK:
-            path = dialog.GetPath()
-            if path:
-                sys.path.insert(1, path)
-            for p in sys.path:
-                print(p)
-
-        dialog.Destroy()
-
-
     def OnExit(self, evt):
         self.periodic_timer.Stop()
         self.Close()
@@ -4286,42 +4265,6 @@ class ToolFrame(wx.Frame):
             for rc in run_context_list:
                 rc.periodic()
 
-class PackageDialog(wx.Dialog):
-    def __init__(self, parent, title):
-        super(PackageDialog, self).__init__(parent, title=title, size=(300, 200))
-
-        self.InitUI()
-
-    def InitUI(self):
-        self.count = 0
-        pnl = wx.Panel(self)
-        vbox = wx.BoxSizer(wx.VERTICAL)
-
-        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.text = wx.TextCtrl(pnl, size=(250, 25), style=wx.TE_READONLY)
-        self.btn1 = wx.Button(pnl, label="Enter Text")
-        self.Bind(wx.EVT_BUTTON, self.OnClick, self.btn1)
-
-        hbox1.Add(self.text, proportion=1, flag=wx.ALIGN_CENTRE)
-        hbox2.Add(self.btn1, proportion=1, flag=wx.RIGHT, border=10)
-
-        vbox.Add((0, 30))
-        vbox.Add(hbox1, flag=wx.ALIGN_CENTRE)
-        vbox.Add((0, 20))
-        vbox.Add(hbox2, proportion=1, flag=wx.ALIGN_CENTRE)
-
-        pnl.SetSizer(vbox)
-        self.Centre()
-        self.Show(True)
-
-    def OnClick(self, e):
-        dlg = wx.TextEntryDialog(self, 'Enter Your Name', 'Text Entry Dialog')
-
-        if dlg.ShowModal() == wx.ID_OK:
-            self.text.SetValue("Name entered:" + dlg.GetValue())
-        dlg.Destroy()
 
 class ResultDialog(wx.Dialog):
     def __init__(self, parent=None, results=None, result_dir=None, result_name=None, title=None, image_list=None):
@@ -4953,12 +4896,11 @@ class RunEntry(object):
         if self.result.filename is not None:
             limit = 0
             filename = os.path.join(self.run_tree.run_context.results_dir, self.result.filename)
-            # "ext" extracts the extension from the filename
             ext = os.path.splitext(filename)[1]
             if ext != svp.LOG_EXT:
                 limit = 1000
             f = open(filename)
-            #TODO : need to be handle when it is a excel file
+
             for entry in f:
                 if len(entry) > 27 and entry[4] == '-' and entry[7] == '-' and entry[13] == ':' and entry[16] == ':':
                     info_log.SetDefaultStyle(wx.TextAttr((26, 13, 171)))

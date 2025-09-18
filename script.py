@@ -98,6 +98,8 @@ PATH_SEP = '/'
 
 SCRIPT_PARAM_ROOT = '_root_'
 
+
+
 class _Popen(forking.Popen):
     def __init__(self, *args, **kw):
         if hasattr(sys, 'frozen'):
@@ -120,31 +122,24 @@ class _Popen(forking.Popen):
 class Process(multiprocessing.Process):
     _Popen = _Popen
 
-
 class ScriptFail(Exception):
     pass
-
 
 class ScriptError(Exception):
     pass
 
-
 class ScriptParamError(Exception):
     pass
 
-
 class ScriptConfigError(Exception):
     pass
-
 
 def result_str(result):
     return result
 
 def is_sequence(arg):
-    return (not hasattr(arg, 'strip') and
-            hasattr(arg, '__getitem__') or
-            hasattr(arg, '__iter__') and
-            not isinstance(arg, str))
+    return (not hasattr(arg, 'strip') and hasattr(arg, '__getitem__') or
+            hasattr(arg, '__iter__') and not isinstance(arg, str))
 
 """ Simple XML pretty print support function
 
